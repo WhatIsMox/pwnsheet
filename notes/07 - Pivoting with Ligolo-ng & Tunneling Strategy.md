@@ -408,7 +408,3 @@ listener_add --addr 0.0.0.0:1433 --to 10.10.10.5:1433
 # PostgreSQL
 listener_add --addr 0.0.0.0:5432 --to 10.10.10.5:5432
 ```
-
----
-
-**➡️ Next Phase**: Phase 4 or Phase 6

@@ -9,9 +9,9 @@ Build a complete, repeatable picture of each target: live hosts, open ports, ser
 2. [Port Scanning](#2-port-scanning)
 3. [Service Enumeration](#3-service-enumeration-per-open-port)
 4. [Web Application Reconnaissance](#4-web-application-reconnaissance)
-5. [SMB / NetBIOS Enumeration](#5-smb-netbios-enumeration)
+5. [SMB/NetBIOS Enumeration](#5-smbnetbios-enumeration)
 6. [NFS Enumeration](#6-nfs-enumeration)
-7. [LDAP / Directory Services](#7-ldap-directory-services-discovery)
+7. [LDAP/Directory Services Discovery](#7-ldapdirectory-services-discovery)
 8. [SNMP Enumeration](#8-snmp-enumeration)
 9. [DNS Enumeration](#9-dns-enumeration)
 10. [FTP Enumeration](#10-ftp-enumeration)
@@ -56,7 +56,7 @@ Build a complete, repeatable picture of each target: live hosts, open ports, ser
 - [ ] **CMS scanning** → [4.5](#45-cms-scanning)
 - [ ] **Vulnerability scanning** → [4.6](#46-web-vulnerability-scanning)
 
-### SMB / NetBIOS
+### SMB/NetBIOS Enumeration
 
 - [ ] **Shares enumerated (anon + auth)** → [5.1](#51-share-listing)
 - [ ] **Permissions documented (read/write)** → [5.2](#52-permissions-and-content-sweep)
@@ -71,7 +71,7 @@ Build a complete, repeatable picture of each target: live hosts, open ports, ser
 - [ ] **Shares mounted and searched for data** → [6.3](#63-search-for-sensitive-data)
 - [ ] **no_root_squash / weak export options checked** → [6.4](#64-no_root_squash-export-misconfig-checks)
 
-### LDAP / Directory Services
+### LDAP/Directory Services Discovery
 
 - [ ] **Naming contexts / domain structure** → [7.1](#71-rootdse-and-naming-contexts)
 - [ ] **Users / groups / computers enumeration** → [7.2](#72-users-groups-computers)
@@ -284,7 +284,7 @@ mkdir -p ~/exam/{enum,findings,vulns}
 cd ~/exam
 
 # Add to /etc/hosts if needed
-echo "$RHOST <HOSTNAME>" | sudo tee -a /etc/hosts
+echo "<RHOST> <HOSTNAME>" | sudo tee -a /etc/hosts
 ```
 
 ---
@@ -1059,7 +1059,7 @@ nikto -useproxy http://<PROXY_IP>:3128 -h http://<RHOST>/
 
 ---
 
-## 5. SMB / NetBIOS Enumeration
+## 5. SMB/NetBIOS Enumeration
 
 ### 5.1 Share listing
 
@@ -1453,7 +1453,7 @@ sudo umount /mnt/nfs/<RHOST>/<SHARE_NAME>
 
 ---
 
-## 7. LDAP / Directory Services Discovery
+## 7. LDAP/Directory Services Discovery
 
 ### 7.1 RootDSE and naming contexts
 

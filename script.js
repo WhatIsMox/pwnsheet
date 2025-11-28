@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMarkdownFiles();
     setupEventListeners();
     setupMarkedOptions();
+    updateResetButtonVisibility();
 });
 
 function setupMarkedOptions() {
@@ -282,7 +283,7 @@ function highlightHashComments() {
         const langMatch = className.match(/language-([a-z0-9_+-]+)/);
         const language = langMatch ? langMatch[1] : '';
 
-        if (language === 'markdown' || language === 'sql') {
+        if (language === 'markdown') {
             return;
         }
 
@@ -655,6 +656,7 @@ function persistCheckboxStates(phase) {
 
     allCheckboxStates[phase] = stateArray;
     localStorage.setItem(CHECKBOX_STORAGE_KEY, JSON.stringify(allCheckboxStates));
+    updateResetButtonVisibility();
 }
 
 function getStoredCheckboxState() {
@@ -679,6 +681,27 @@ function getStoredParameters() {
 
 function persistParameters() {
     localStorage.setItem(PARAMS_STORAGE_KEY, JSON.stringify(parameters));
+    updateResetButtonVisibility();
+}
+
+function hasStoredCheckboxData() {
+    const stored = getStoredCheckboxState();
+    return Object.values(stored).some(value => Array.isArray(value) && value.length > 0);
+}
+
+function hasStoredParameterData() {
+    const stored = getStoredParameters();
+    return Object.keys(stored).length > 0;
+}
+
+function updateResetButtonVisibility() {
+    const resetBtn = document.getElementById('newAssessmentBtn');
+    if (!resetBtn) {
+        return;
+    }
+
+    const shouldShow = hasStoredCheckboxData() || hasStoredParameterData();
+    resetBtn.hidden = !shouldShow;
 }
 
 function resetAssessment() {
@@ -695,6 +718,8 @@ function resetAssessment() {
     if (currentPhase) {
         loadPhase(currentPhase);
     }
+
+    updateResetButtonVisibility();
     
     showResetToast();
 }
