@@ -283,7 +283,7 @@ function highlightHashComments() {
         const langMatch = className.match(/language-([a-z0-9_+-]+)/);
         const language = langMatch ? langMatch[1] : '';
 
-        if (language === 'markdown') {
+        if (language === 'markdown' || language === 'python') {
             return;
         }
 
