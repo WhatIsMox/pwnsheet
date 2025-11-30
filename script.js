@@ -16,19 +16,63 @@ let selectionCopyHandlerAttached = false;
 let lastCopiedSelection = '';
 let lastCopiedWrapper = null;
 let lastCopiedAt = 0;
+
 const CHECKBOX_STORAGE_KEY = 'checkboxStates';
 const PARAMS_STORAGE_KEY = 'parameters';
 const PARAM_TOKEN_REGEX = /(<[A-Z_0-9]+>|{{[A-Z_0-9]+}})/g;
 
+// CONSTANTS CHANGED: Using %% delimiters and a safe separator to avoid Markdown collisions (tables/backticks)
+const PARAM_MARKER_START = '%%PWN_START%%';
+const PARAM_MARKER_END = '%%PWN_END%%';
+// Use a separator without pipes to avoid Markdown table splitting inside inline code/backticks
+const PARAM_SEPARATOR = '%%PVAL%%';
+const PARAM_SEPARATOR_REGEX = escapeRegex(PARAM_SEPARATOR);
+
 document.addEventListener('DOMContentLoaded', () => {
+    injectStyles(); // Ensures green color is always loaded
     loadMarkdownFiles();
     setupEventListeners();
     setupMarkedOptions();
     updateResetButtonVisibility();
+    
+    // Smooth fade in
+    document.body.style.opacity = '0';
+    requestAnimationFrame(() => {
+        document.body.style.transition = 'opacity 0.3s ease';
+        document.body.style.opacity = '1';
+    });
 });
 
+function escapeRegex(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// FIX: Force Green Styles with High Specificity
+function injectStyles() {
+    const styleId = 'pwn-dynamic-styles';
+    if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = `
+            /* Target the token specifically */
+            span.param-token {
+                color: rgb(0, 255, 30) !important; /* Bright Green */
+                font-weight: bold;
+                display: inline-block;
+                text-shadow: 0 0 2px rgba(46, 204, 113, 0.2);
+            }
+            
+            /* Ensure it overrides code block syntax highlighting */
+            .code-block code span.param-token,
+            pre code span.param-token {
+                color: rgb(0, 255, 30) !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
 function setupMarkedOptions() {
-    // Configure marked to open external links in new tabs
     const renderer = new marked.Renderer();
     const originalLinkRenderer = renderer.link;
     
@@ -54,7 +98,6 @@ function setupEventListeners() {
     const scrollTopBtn = document.getElementById('scrollTopBtn');
     const contentArea = document.getElementById('contentArea');
     
-    // Monitor scroll on content area
     contentArea.addEventListener('scroll', () => {
         if (contentArea.scrollTop > 300) {
             scrollTopBtn.classList.add('visible');
@@ -72,15 +115,7 @@ function setupEventListeners() {
         newAssessmentBtn.addEventListener('click', resetAssessment);
     }
 
-    // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
-        // Ctrl/Cmd + K to focus search (if implemented later)
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-            e.preventDefault();
-            // Future: focus search input
-        }
-        
-        // Ctrl/Cmd + R to reset
         if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
             e.preventDefault();
             resetAssessment();
@@ -91,13 +126,11 @@ function setupEventListeners() {
 async function loadMarkdownFiles() {
     const mdFiles = [
         '01 - Reconnaissance & Enumeration.md',
-        '02 - Vulnerability Assessment & Web Testing.md',
-        '03 - Exploitation (Infrastructure & Web).md',
-        '04 - Post Exploitation & Privilege Escalation.md',
-        '05 - Pivoting with Ligolo-ng & Tunneling Strategy.md',
-        '06 - Lateral Movement.md',
-        '07 - Active Directory Exploitation.md',
-
+        '02 - Vulnerability Research & Exploitation.md',
+        '03 - Post Exploitation & Privilege Escalation.md',
+        '04 - Pivoting with Ligolo-ng & Tunneling Strategy.md',
+        '05 - Lateral Movement.md',
+        '06 - Active Directory Exploitation.md',
     ];
 
     const phaseList = document.getElementById('phaseList');
@@ -141,16 +174,14 @@ async function loadMarkdownFiles() {
     }
 
     if (loadedCount === 0) {
-        phaseList.innerHTML = '<div class="loading-text">⚠️ No markdown files found. Please ensure phase files are in the same directory.</div>';
-        document.getElementById('contentArea').innerHTML = '<div class="loading-text">⚠️ Unable to load content. Check console for errors.</div>';
+        phaseList.innerHTML = '<div class="loading-text">⚠️ No markdown files found.</div>';
         return;
     }
 
     if (currentPhase && phases[currentPhase]) {
         loadPhase(currentPhase);
     } else if (Object.keys(phases).length > 0) {
-        const firstPhase = Object.keys(phases)[0];
-        currentPhase = firstPhase;
+        currentPhase = Object.keys(phases)[0];
         loadPhase(currentPhase);
     }
 }
@@ -162,7 +193,6 @@ function loadPhase(phase) {
     clearCodeBlockSelection(true);
     paramSearchTerm = '';
 
-    // Extract checkbox states from markdown
     const matches = content.matchAll(/\[([ xX])\]/g);
     let index = 0;
     for (const match of matches) {
@@ -170,7 +200,6 @@ function loadPhase(phase) {
         index++;
     }
 
-    // Load saved checkbox states
     const storedStates = loadCheckboxStatesFromStorage(phase);
     if (storedStates) {
         storedStates.forEach((state, idx) => {
@@ -193,8 +222,10 @@ function renderContent() {
     
     enhanceCodeBlocks();
     highlightHashComments();
+    // Run highlighting after DOM is built
     highlightParametersInText();
     highlightParametersInCodeBlocks();
+    
     makeCheckboxesInteractive();
     setupCodeBlockSelection();
 }
@@ -203,14 +234,20 @@ function applyParametersToContent(content) {
     let processedContent = content;
 
     Object.keys(parameters).forEach(param => {
-        const value = getDisplayValueForParam(param);
-        const regex1 = new RegExp(`<${param}>`, 'g');
-        const regex2 = new RegExp(`{{${param}}}`, 'g');
-        processedContent = processedContent.replace(regex1, value);
-        processedContent = processedContent.replace(regex2, value);
+        const value = wrapValueWithMarkers(param, getDisplayValueForParam(param));
+        const safeParam = param.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex1 = new RegExp(`<${safeParam}>`, 'g');
+        const regex2 = new RegExp(`{{${safeParam}}}`, 'g');
+        processedContent = processedContent.replace(regex1, () => value);
+        processedContent = processedContent.replace(regex2, () => value);
     });
 
     return processedContent;
+}
+
+function wrapValueWithMarkers(param, value) {
+    // Keep separator free of table delimiters so inline code in tables stays intact
+    return `${PARAM_MARKER_START}${param}${PARAM_SEPARATOR}${value}${PARAM_MARKER_END}`;
 }
 
 function extractCodeBlockParameters(content) {
@@ -374,6 +411,7 @@ function highlightHashComments() {
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
 
+        // IMPORTANT: We use textContent here to properly process plain text including markers
         const lines = codeBlock.textContent.split('\n');
         let hasHashComments = false;
 
@@ -409,14 +447,7 @@ function highlightParametersInCodeBlocks() {
         if (!codeBlock) {
             return;
         }
-
-        const params = parseParamsFromDataset(wrapper.dataset.params);
-        const targets = collectParamTargets(codeBlock, params);
-        if (!targets.length) {
-            return;
-        }
-
-        wrapParamsInElement(codeBlock, targets, false);
+        highlightMarkedParameters(codeBlock, false);
     });
 }
 
@@ -425,91 +456,73 @@ function highlightParametersInText() {
     if (!contentArea) {
         return;
     }
-
-    const targets = collectParamTargets(contentArea, Object.keys(parameters));
-    if (!targets.length) {
-        return;
-    }
-
-    wrapParamsInElement(contentArea, targets, true);
+    // Preserve markers in code blocks so they can be processed separately
+    highlightMarkedParameters(contentArea, true, true);
 }
 
-function collectParamTargets(element, params = []) {
-    const targetSet = new Set();
-
-    (params || []).forEach(param => {
-        const value = getDisplayValueForParam(param);
-        if (value) {
-            targetSet.add(value);
-        }
-    });
-
-    const textContent = element.textContent || '';
-    const matches = textContent.match(PARAM_TOKEN_REGEX);
-    if (matches && matches.length) {
-        matches.forEach(token => targetSet.add(token));
-    }
-
-    return Array.from(targetSet).filter(Boolean);
-}
-
-function wrapParamsInElement(element, targets, skipCodeBlocks) {
-    const regex = buildParamRegex(targets);
-    if (!regex) {
-        return;
-    }
+function highlightMarkedParameters(element, skipCodeBlocks, preserveCodeBlockMarkers = false) {
+    mergeAdjacentTextNodes(element);
 
     const walker = document.createTreeWalker(
         element,
         NodeFilter.SHOW_TEXT,
         {
             acceptNode(node) {
-                if (!node.nodeValue || !node.nodeValue.trim()) {
+                if (!node.nodeValue || node.nodeValue.indexOf(PARAM_MARKER_START) === -1) {
                     return NodeFilter.FILTER_REJECT;
                 }
 
                 const parent = node.parentElement;
-                if (!parent) {
-                    return NodeFilter.FILTER_ACCEPT;
-                }
+                if (!parent) return NodeFilter.FILTER_ACCEPT;
 
-                if (parent.closest('.param-token')) {
-                    return NodeFilter.FILTER_REJECT;
-                }
-
-                if (parent.closest('input, textarea, button, .params-panel')) {
-                    return NodeFilter.FILTER_REJECT;
-                }
-
-                if (skipCodeBlocks && parent.closest('.code-block')) {
-                    return NodeFilter.FILTER_REJECT;
-                }
+                if (parent.closest('.param-token')) return NodeFilter.FILTER_REJECT;
+                if (parent.closest('input, textarea, button, .params-panel')) return NodeFilter.FILTER_REJECT;
+                if (skipCodeBlocks && parent.closest('.code-block')) return NodeFilter.FILTER_REJECT;
 
                 return NodeFilter.FILTER_ACCEPT;
             }
         }
     );
 
-    // FIX: Collect all nodes first to prevent TreeWalker index corruption
-    // when nodes are replaced during the loop.
     const textNodes = [];
     let textNode;
     while ((textNode = walker.nextNode())) {
         textNodes.push(textNode);
     }
 
-    // Process the collected nodes safely
     textNodes.forEach(node => {
-        wrapMatchesInTextNode(node, regex, new Set(targets));
+        wrapMarkersInTextNode(node);
     });
+
+    cleanupResidualMarkers(element, preserveCodeBlockMarkers);
 }
 
-function wrapMatchesInTextNode(node, regex, targetSet) {
+function mergeAdjacentTextNodes(root) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let node;
+
+    while ((node = walker.nextNode())) {
+        while (node.nextSibling && node.nextSibling.nodeType === Node.TEXT_NODE) {
+            node.nodeValue += node.nextSibling.nodeValue;
+            node.parentNode.removeChild(node.nextSibling);
+        }
+    }
+}
+
+function wrapMarkersInTextNode(node) {
     const text = node.nodeValue;
-    regex.lastIndex = 0;
+    // Use escaped separator so inline code/backticks and tables parse safely
+    const regex = new RegExp(`${PARAM_MARKER_START}([A-Z0-9_]+)${PARAM_SEPARATOR_REGEX}([\\s\\S]*?)${PARAM_MARKER_END}`, 'g');
 
     const matches = Array.from(text.matchAll(regex));
     if (!matches.length) {
+        // Fallback: strip markers if regex failed (cleans up potential visible artifacts)
+        if (text.includes(PARAM_MARKER_START) || text.includes(PARAM_MARKER_END)) {
+            const cleaned = text
+                .replace(new RegExp(`${PARAM_MARKER_START}[A-Z0-9_]+${PARAM_SEPARATOR_REGEX}`, 'g'), '')
+                .replace(new RegExp(PARAM_MARKER_END, 'g'), '');
+            node.nodeValue = cleaned;
+        }
         return;
     }
 
@@ -518,7 +531,7 @@ function wrapMatchesInTextNode(node, regex, targetSet) {
 
     matches.forEach(match => {
         const start = match.index || 0;
-        const value = match[0];
+        const value = match[2];
 
         if (start > lastIndex) {
             fragment.appendChild(document.createTextNode(text.slice(lastIndex, start)));
@@ -526,10 +539,15 @@ function wrapMatchesInTextNode(node, regex, targetSet) {
 
         const span = document.createElement('span');
         span.className = 'param-token';
+        span.dataset.param = match[1];
         span.textContent = value;
+        // Force Inline Style as Backup
+        span.style.color = 'rgb(0, 255, 30)';
+        span.style.fontWeight = 'bold';
+        
         fragment.appendChild(span);
 
-        lastIndex = start + value.length;
+        lastIndex = (match.index || 0) + match[0].length;
     });
 
     if (lastIndex < text.length) {
@@ -539,21 +557,28 @@ function wrapMatchesInTextNode(node, regex, targetSet) {
     node.parentNode.replaceChild(fragment, node);
 }
 
-function buildParamRegex(targets) {
-    const escaped = targets
-        .filter(Boolean)
-        .map(value => escapeRegex(value))
-        .sort((a, b) => b.length - a.length);
+function cleanupResidualMarkers(element, skipCodeBlocks = false) {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    let node;
 
-    if (!escaped.length) {
-        return null;
+    while ((node = walker.nextNode())) {
+        if (skipCodeBlocks && node.parentElement && node.parentElement.closest('.code-block')) {
+            continue;
+        }
+
+        const value = node.nodeValue || '';
+        if (!value.includes(PARAM_MARKER_START) && !value.includes(PARAM_MARKER_END)) {
+            continue;
+        }
+
+        const cleaned = value
+            .replace(new RegExp(`${PARAM_MARKER_START}[A-Z0-9_]+${PARAM_SEPARATOR_REGEX}`, 'g'), '')
+            .replace(new RegExp(PARAM_MARKER_END, 'g'), '');
+
+        if (cleaned !== value) {
+            node.nodeValue = cleaned;
+        }
     }
-
-    return new RegExp(`(${escaped.join('|')})`, 'g');
-}
-
-function escapeRegex(value) {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function getDisplayValueForParam(param) {
@@ -735,7 +760,6 @@ function makeCheckboxesInteractive() {
             checkboxStates.set(idx, e.target.checked);
             persistCheckboxStates(currentPhase);
             
-            // Add visual feedback
             e.target.style.transform = 'scale(1.2)';
             setTimeout(() => {
                 e.target.style.transform = '';
@@ -833,7 +857,6 @@ function renderParametersPanel() {
             updateContent(scrollPos);
         });
 
-        // Add focus animation
         input.addEventListener('focus', (e) => {
             e.target.parentElement.style.transform = 'translateX(4px)';
         });
@@ -855,10 +878,7 @@ function updateContent(scrollPos = null) {
 function toggleRightPanel() {
     const rightPanel = document.getElementById('rightPanel');
     rightPanel.classList.toggle('collapsed');
-    
-    // Save preference
-    const isCollapsed = rightPanel.classList.contains('collapsed');
-    localStorage.setItem('rightPanelCollapsed', isCollapsed);
+    localStorage.setItem('rightPanelCollapsed', rightPanel.classList.contains('collapsed'));
 }
 
 function toggleLayoutForParameters(hasParameters) {
@@ -874,7 +894,6 @@ function toggleLayoutForParameters(hasParameters) {
         centerPanel.classList.add('col-lg-7', 'col-md-6');
         rightPanel.classList.remove('d-none');
         
-        // Restore previous collapsed state
         const wasCollapsed = localStorage.getItem('rightPanelCollapsed') === 'true';
         if (wasCollapsed) {
             rightPanel.classList.add('collapsed');
@@ -950,7 +969,6 @@ function updateResetButtonVisibility() {
 }
 
 function resetAssessment() {
-    // Confirm before reset
     if (!confirm('Are you sure you want to reset the playbook? This will clear all checkboxes and parameters.')) {
         return;
     }
@@ -965,7 +983,6 @@ function resetAssessment() {
     }
 
     updateResetButtonVisibility();
-    
     showResetToast();
 }
 
@@ -990,13 +1007,3 @@ function resetContentScroll() {
         contentArea.scrollTop = 0;
     }
 }
-
-// Add smooth transitions for better UX
-document.addEventListener('DOMContentLoaded', () => {
-    // Add loading animation
-    document.body.style.opacity = '0';
-    requestAnimationFrame(() => {
-        document.body.style.transition = 'opacity 0.3s ease';
-        document.body.style.opacity = '1';
-    });
-});
