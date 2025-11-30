@@ -30,113 +30,113 @@ Build a complete, repeatable picture of each target: live hosts, open ports, ser
 
 ### Host Discovery
 
-- [ ] **ICMP sweep/ARP discovery/TCP ping** → [1.1](#11-icmp-sweeparp-discoverytcp-ping)
-- [ ] **Reachability confirmation from attack VM** → [1.2](#12-reachability-confirmation)
-- [ ] **Network pattern analysis (servers vs workstations)** → [1.3](#13-network-pattern-analysis)
+- [ ] **Host discovery (ICMP/ARP/TCP)** → [1.1](#11-icmp-sweeparp-discoverytcp-ping)
+- [ ] **Confirm VM reachability** → [1.2](#12-reachability-confirmation)
+- [ ] **Analyze network patterns** → [1.3](#13-network-pattern-analysis)
 
 ### Port Scanning
 
-- [ ] **Full TCP scan (-p-) + default scripts + versions** → [2.1](#21-full-tcp-scan-mandatory-per-host)
-- [ ] **Top UDP ports (≥100) + critical UDP list** → [2.2](#22-udp-scan-essential)
-- [ ] **Parse results and save per-host** → [2.3](#23-saving-results)
-- [ ] **Vulnerability scan** → [2.4](#24-vulnerability-scanning)
+- [ ] **Full TCP scan (scripts/versions)** → [2.1](#21-full-tcp-scan-mandatory-per-host)
+- [ ] **Essential UDP scan** → [2.2](#22-udp-scan-essential)
+- [ ] **Save results per host** → [2.3](#23-saving-results)
+- [ ] **Vuln scan + triage** → [2.4](#24-vulnerability-scanning)
 
 ### Service Enumeration
 
-- [ ] **Banner grabbing for each open service** → [3.1](#31-manual-banner-grabbing)
-- [ ] **Service versions documented** → [3.2](#32-version-confirmation)
-- [ ] **Basic manual checks (defaults / anonymous / weak configs)** → [3.3](#33-baseline-checks-by-service)
+- [ ] **Grab service banners** → [3.1](#31-manual-banner-grabbing)
+- [ ] **Confirm service versions** → [3.2](#32-version-confirmation)
+- [ ] **Check for weak/default configs** → [3.3](#33-baseline-checks-by-service)
 
 ### Web Reconnaissance
 
-- [ ] **Tech stack identification** → [4.1](#41-initial-fingerprinting)
-- [ ] **Directory / endpoint discovery (multiple tools)** → [4.2](#42-directory-endpoint-discovery)
-- [ ] **Special files (robots, sitemap, backups)** → [4.3](#43-special-files-and-backups)
-- [ ] **Attack surface mapping (auth, upload, params, APIs, vhosts)** → [4.4](#44-attack-surface-mapping)
-- [ ] **CMS scanning** → [4.5](#45-cms-scanning)
-- [ ] **Vulnerability scanning** → [4.6](#46-web-vulnerability-scanning)
+- [ ] **Fingerprint web stack** → [4.1](#41-initial-fingerprinting)
+- [ ] **Find dirs/endpoints (multi-tool)** → [4.2](#42-directory-endpoint-discovery)
+- [ ] **Check special files/backups** → [4.3](#43-special-files-and-backups)
+- [ ] **Map web attack surface** → [4.4](#44-attack-surface-mapping)
+- [ ] **Identify CMS + targeted scan** → [4.5](#45-cms-scanning)
+- [ ] **Web vuln scan + validate** → [4.6](#46-web-vulnerability-scanning)
 
 ### SMB/NetBIOS Enumeration
 
-- [ ] **Shares enumerated (anon + auth)** → [5.1](#51-share-listing)
-- [ ] **Permissions documented (read/write)** → [5.2](#52-permissions-and-content-sweep)
-- [ ] **User / group info collected** → [5.3](#53-usersgroupsos)
-- [ ] **NetExec/CrackMapExec enumeration** → [5.4](#54-netexeccrackmapexec-enumeration)
-- [ ] **SMB vulnerability checks** → [5.5](#55-smb-vulnerability-checks)
+- [ ] **List shares (anon/auth)** → [5.1](#51-share-listing)
+- [ ] **Review perms + content sweep** → [5.2](#52-permissions-and-content-sweep)
+- [ ] **Collect OS/users/groups/domain** → [5.3](#53-usersgroupsos)
+- [ ] **Run NetExec/CME checks** → [5.4](#54-netexeccrackmapexec-enumeration)
+- [ ] **Check SMB weaknesses/issues** → [5.5](#55-smb-vulnerability-checks)
 
 ### NFS
 
-- [ ] **Exports enumerated (showmount, rpcinfo)** → [6.1](#61-detect-rpcnfs-and-list-exports)
-- [ ] **Mountable shares + permissions checked** → [6.2](#62-mount-shares-and-verify-access)
-- [ ] **Shares mounted and searched for data** → [6.3](#63-search-for-sensitive-data)
-- [ ] **no_root_squash / weak export options checked** → [6.4](#64-no_root_squash-export-misconfig-checks)
+- [ ] **Find RPC/NFS + exports** → [6.1](#61-detect-rpcnfs-and-list-exports)
+- [ ] **Verify mountable exports** → [6.2](#62-mount-shares-and-verify-access)
+- [ ] **Mount + hunt sensitive data** → [6.3](#63-search-for-sensitive-data)
+- [ ] **Review export options (no_root_squash)** → [6.4](#64-no_root_squash-export-misconfig-checks)
 
 ### LDAP/Directory Services Discovery
 
-- [ ] **Naming contexts / domain structure** → [7.1](#71-rootdse-and-naming-contexts)
-- [ ] **Users / groups / computers enumeration** → [7.2](#72-users-groups-computers)
-- [ ] **Domain info and DC identification** → [7.3](#73-dc-domain-role-confirmation)
+- [ ] **Query RootDSE + contexts** → [7.1](#71-rootdse-and-naming-contexts)
+- [ ] **Enumerate directory objects** → [7.2](#72-users-groups-computers)
+- [ ] **Confirm DCs and roles** → [7.3](#73-dc-domain-role-confirmation)
 
 ### SNMP
 
-- [ ] **Community strings discovered** → [8.1](#81-community-discovery)
-- [ ] **System, users, processes, network extracted** → [8.2](#82-walk-important-oids)
+- [ ] **Find community strings** → [8.1](#81-community-discovery)
+- [ ] **Walk key OIDs** → [8.2](#82-walk-important-oids)
 
 ### DNS
 
-- [ ] **Zone transfer attempts** → [9.1](#91-zone-transfers)
-- [ ] **Subdomain enumeration** → [9.2](#92-subdomain-enumeration)
-- [ ] **NS/SOA/MX/TXT + domain map** → [9.3](#93-record-sweep)
+- [ ] **Attempt zone transfers (AXFR)** → [9.1](#91-zone-transfers)
+- [ ] **Enumerate subdomains + resolve** → [9.2](#92-subdomain-enumeration)
+- [ ] **Sweep core records (NS/SOA/MX/TXT)** → [9.3](#93-record-sweep)
 
 ### FTP
 
-- [ ] **Anonymous login check** → [10.1](#101-anonymous-login-check)
-- [ ] **Version vulnerability check** → [10.2](#102-version-and-vulnerability-check)
-- [ ] **File enumeration and download** → [10.3](#103-file-enumeration)
+- [ ] **Test anonymous login** → [10.1](#101-anonymous-login-check)
+- [ ] **Capture version + assess vulns** → [10.2](#102-version-and-vulnerability-check)
+- [ ] **Enumerate/download accessible files** → [10.3](#103-file-enumeration)
 
 ### SSH
 
-- [ ] **Version and algorithm enumeration** → [11.1](#111-version-and-algorithm-enumeration)
-- [ ] **Authentication methods** → [11.2](#112-authentication-methods)
-- [ ] **Brute force (if applicable)** → [11.3](#113-brute-force-if-applicable)
+- [ ] **Enumerate version + algorithms** → [11.1](#111-version-and-algorithm-enumeration)
+- [ ] **Identify auth methods/policy** → [11.2](#112-authentication-methods)
+- [ ] **Assess brute-force risk (in-scope)** → [11.3](#113-brute-force-if-applicable)
 
 ### SMTP
 
-- [ ] **User enumeration (VRFY/EXPN/RCPT)** → [12.1](#121-user-enumeration)
-- [ ] **Open relay check** → [12.2](#122-open-relay-check)
+- [ ] **Test user enum (VRFY/EXPN/RCPT)** → [12.1](#121-user-enumeration)
+- [ ] **Check open relay/misconfig** → [12.2](#122-open-relay-check)
 
 ### POP3/IMAP
 
-- [ ] **Banner and capabilities** → [13.1](#131-banner-and-capabilities)
-- [ ] **Authentication and enumeration** → [13.2](#132-authentication-and-enumeration)
+- [ ] **Capture banners/capabilities** → [13.1](#131-banner-and-capabilities)
+- [ ] **Assess auth + enum exposure** → [13.2](#132-authentication-and-enumeration)
 
 ### RPC
 
-- [ ] **RPC service enumeration** → [14.1](#141-rpc-service-enumeration)
-- [ ] **RPC client enumeration** → [14.2](#142-rpc-client-enumeration)
+- [ ] **Enumerate RPC services/interfaces** → [14.1](#141-rpc-service-enumeration)
+- [ ] **RPC client enumeration** → [14.2](#142-rpc-client-enumeration)
 
 ### Databases
 
-- [ ] **MSSQL enumeration** → [15.1](#151-mssql-enumeration)
-- [ ] **MySQL enumeration** → [15.2](#152-mysql-enumeration)
-- [ ] **PostgreSQL enumeration** → [15.3](#153-postgresql-enumeration)
+- [ ] **Enumerate MSSQL posture** → [15.1](#151-mssql-enumeration)
+- [ ] **Enumerate MySQL posture** → [15.2](#152-mysql-enumeration)
+- [ ] **Enumerate PostgreSQL posture** → [15.3](#153-postgresql-enumeration)
 
 ### RDP/VNC
 
-- [ ] **RDP enumeration** → [16.1](#161-rdp-enumeration)
-- [ ] **VNC enumeration** → [16.2](#162-vnc-enumeration)
+- [ ] **Enumerate RDP config/capabilities** → [16.1](#161-rdp-enumeration)
+- [ ] **Enumerate VNC auth/posture** → [16.2](#162-vnc-enumeration)
 
 ### Active Directory
 
-- [ ] **Domain enumeration** → [17.1](#171-domain-enumeration)
-- [ ] **User and group enumeration** → [17.2](#172-user-and-group-enumeration)
-- [ ] **Kerberos enumeration** → [17.3](#173-kerberos-enumeration)
+- [ ] **Enumerate domain + trusts** → [17.1](#171-domain-enumeration)
+- [ ] **Enumerate users/groups/privs** → [17.2](#172-user-and-group-enumeration)
+- [ ] **Assess Kerberos exposure** → [17.3](#173-kerberos-enumeration)
 
 ### Documentation
 
-- [ ] **Suspected OS & role documented** → [18.1](#181-suspected-os-and-role)
-- [ ] **Attack hypotheses formulated** → [18.2](#182-attack-hypotheses)
-- [ ] **Note Findings** → [18.3](#183-host-notes-repeat-per-host), [18.4](#184-network-inventory-per-subnet)
+- [ ] **Record OS/role + confidence** → [18.1](#181-suspected-os-and-role)
+- [ ] **Track attack hypotheses** → [18.2](#182-attack-hypotheses)
+- [ ] **Maintain host notes/inventory** → [18.3](#183-host-notes-repeat-per-host), [18.4](#184-network-inventory-per-subnet)
 
 ---
 
@@ -147,59 +147,37 @@ Build a complete, repeatable picture of each target: live hosts, open ports, ser
 ```bash
 # Fast TCP scan all ports
 sudo nmap -Pn -sS -p- --min-rate 10000 <RHOST>
-```
 
-```bash
 # Service scan on discovered ports
 sudo nmap -sC -sV -p <PORTS> <RHOST>
-```
 
-```bash
 # UDP top ports
 sudo nmap -sU --top-ports 20 <RHOST>
-```
 
-```bash
 # SMB null session
 smbclient -L //<RHOST> -N && enum4linux -a <RHOST>
-```
 
-```bash
 # LDAP anonymous
 ldapsearch -x -H ldap://<RHOST> -s base
-```
 
-```bash
 # Web directory brute
 gobuster dir -u http://<RHOST>/ -w /usr/share/wordlists/dirb/common.txt -x php,txt,html
-```
 
-```bash
 # SNMP walk
 snmpwalk -v2c -c public <RHOST>
-```
 
-```bash
 # Zone transfer
 dig axfr <DOMAIN> @<NS>
-```
 
-```bash
 # Rustscan fast all-ports scan, chaining into nmap
 rustscan -a <RHOST> --ulimit 5000 -- -sV -sC -oA rustscan_nmap_<RHOST>
-```
 
-```bash
 # Naabu fast TCP port discovery
 naabu -host <RHOST> -p - -rate 20000 -o naabu_<RHOST>.txt
-```
 
-```bash
 # HTTP probing on many hosts from a file
 httpx -l hosts_http.txt -status-code -title -tech-detect -o httpx_hosts_http.txt
-```
 
-```bash
 # External subdomain discovery quick combo
 subfinder -d <DOMAIN> -all -o subdomains_<DOMAIN>.txt
 dnsx -l subdomains_<DOMAIN>.txt -a -resp-only -o resolved_subdomains_<DOMAIN>.txt
@@ -214,34 +192,22 @@ Before starting, verify tools are available:
 ```bash
 # Core scanning
 which nmap masscan
-```
 
-```bash
 # Web enumeration
 which gobuster feroxbuster ffuf nikto whatweb wpscan
-```
 
-```bash
 # SMB tools
 which smbclient smbmap enum4linux enum4linux-ng rpcclient
-```
 
-```bash
 # Network tools
 which snmpwalk onesixtyone ldapsearch
-```
 
-```bash
 # Password attacks
 which hydra medusa
-```
 
-```bash
 # AD tools
 which bloodhound-python kerbrute impacket-GetNPUsers impacket-GetUserSPNs
-```
 
-```bash
 # NetExec/CrackMapExec
 which nxc netexec crackmapexec
 ```
@@ -334,14 +300,10 @@ Start with ICMP, then fall back to TCP pings, then ARP if local, then no-ping sc
 ```bash
 # ICMP sweep (fast initial discovery)
 nmap -sn <SUBNET>/24 -oA recon_hosts_icmp
-```
 
-```bash
 # Extract live IPs (grep on gnmap)
 grep "Status: Up" recon_hosts_icmp.gnmap | cut -d " " -f 2 > live_hosts.txt
-```
 
-```bash
 # Alternative: ping sweep with fping
 fping -a -g <SUBNET>/24 2>/dev/null > live_hosts.txt
 ```
@@ -352,9 +314,7 @@ If ICMP is blocked:
 # TCP SYN ping on common ports across the subnet
 nmap -sn -PS21,22,23,25,53,80,110,135,139,143,443,445,993,995,1723,3389,5900,8080 \
   <SUBNET>/24 -oA recon_hosts_tcp
-```
 
-```bash
 # TCP ACK ping on common ports (useful for stateful firewalls)
 nmap -sn -PA21,22,80,443 <SUBNET>/24 -oA recon_hosts_tcp_ack
 ```
@@ -364,14 +324,10 @@ If you are on the same L2 (local network), add ARP discovery:
 ```bash
 # ARP discovery with Nmap (fastest for local networks)
 nmap -sn -PR <SUBNET>/24 -oA recon_hosts_arp
-```
 
-```bash
 # ARP discovery of local network with arp-scan
 sudo arp-scan -l
-```
 
-```bash
 # ARP discovery of specific subnet with arp-scan
 sudo arp-scan <SUBNET>/24
 ```
@@ -380,10 +336,8 @@ If discovery is totally blocked:
 
 ```bash
 # Assume single host is up and scan without ping
-nmap -Pn 10.11.1.5 -oA recon_host_10.11.1.5_noping
-```
+nmap -Pn <IP> -oA recon_host_10.11.1.5_noping
 
-```bash
 # Scan entire subnet as up hosts with top 1000 ports
 nmap -Pn -sS --top-ports 1000 <SUBNET>/24 -oA recon_noping_top1000
 ```
@@ -393,24 +347,16 @@ NetBIOS discovery (when SMB/NetBIOS suspected):
 ```bash
 # NetBIOS scan of subnet with nbtscan
 nbtscan <SUBNET>/24
-```
 
-```bash
 # Recursive NetBIOS scan of subnet with nbtscan
 nbtscan -r <SUBNET>/24
-```
 
-```bash
 # Lookup NetBIOS names for a single host
 nmblookup -A <RHOST>
-```
 
-```bash
 # SMB discovery across subnet with NetExec (nxc)
 nxc smb <SUBNET>/24
-```
 
-```bash
 # SMB discovery across subnet with netexec
 netexec smb <SUBNET>/24
 ```
@@ -422,14 +368,10 @@ For every "up" host, validate from your VM:
 ```bash
 # Ping host to confirm basic reachability
 ping -c 2 <RHOST>
-```
 
-```bash
 # Run traceroute to identify network path to host
 traceroute -n <RHOST>
-```
 
-```bash
 # Check if host responds on common TCP ports
 nc -zv <RHOST> 22 80 443 445 2>&1
 ```
@@ -443,14 +385,10 @@ From live hosts list, roughly cluster likely roles:
 ```bash
 # Quick top-ports/service scan across live hosts to guess roles
 nmap -sS -sV -T4 --top-ports 200 -iL live_hosts.txt -oA nmap_top200_all
-```
 
-```bash
 # OS fingerprinting against live hosts to guess operating systems
 nmap -O --osscan-guess -iL live_hosts.txt -oA nmap_os_guess_all
-```
 
-```bash
 # Aggressive scan on top ports for detailed host information
 nmap -A -T4 --top-ports 100 -iL live_hosts.txt -oA nmap_aggressive_top100
 ```
@@ -503,9 +441,7 @@ Note patterns like:
 ```bash
 # Ultra-fast TCP all-ports sweep with Nmap
 sudo nmap -Pn -sS -p- --min-rate 10000 -v <RHOST> -oA nmap_fast_tcp_<RHOST>
-```
 
-```bash
 # Fast TCP all-ports sweep with Masscan
 sudo masscan -p1-65535 <RHOST> --rate=1000 -oL masscan_<RHOST>.txt
 ```
@@ -515,14 +451,10 @@ sudo masscan -p1-65535 <RHOST> --rate=1000 -oL masscan_<RHOST>.txt
 ```bash
 # Extract open TCP ports from fast Nmap scan into a comma-separated list
 grep -E '^[0-9]+/tcp.*open' nmap_fast_tcp_<RHOST>.nmap | cut -d'/' -f1 | tr '\n' ',' | sed 's/,$//' > tcp_ports.txt
-```
 
-```bash
 # Run detailed Nmap scan with default scripts and version detection on discovered ports
 sudo nmap -sC -sV -p $(cat tcp_ports.txt) <RHOST> -oA nmap_detailed_tcp_<RHOST>
-```
 
-```bash
 # Run full comprehensive TCP scan with aggressive detection on all ports
 sudo nmap -A -T4 -sC -sV -p- <RHOST> -oA nmap_full_tcp_<RHOST>
 ```
@@ -532,14 +464,10 @@ sudo nmap -A -T4 -sC -sV -p- <RHOST> -oA nmap_full_tcp_<RHOST>
 ```bash
 # Standard thorough TCP scan with default scripts and version detection
 sudo nmap -Pn -sC -sV -p- -oN alltcp.txt <RHOST>
-```
 
-```bash
 # Service scan with maximum version detection intensity
 sudo nmap -sV --version-intensity 9 -p- <RHOST> -oA nmap_versions_<RHOST>
-```
 
-```bash
 # Aggressive TCP scan using only discovery scripts
 sudo nmap -A -T4 -p- -sS -sV -oN initial --script discovery <RHOST>
 ```
@@ -551,19 +479,13 @@ UDP scanning is slow but critical for finding services like SNMP, DNS, TFTP:
 ```bash
 # UDP scan of top 100 ports (recommended minimum)
 sudo nmap -sU --top-ports 100 <RHOST> -oA nmap_udp_top100_<RHOST>
-```
 
-```bash
 # UDP scan of top 20 ports with scripts and service detection
 sudo nmap -Pn -sU -sV -sC --top-ports=20 -oN top_20_udp_nmap.txt <RHOST>
-```
 
-```bash
 # UDP scan of critical high-value ports
 sudo nmap -sU -p 53,67,68,69,123,161,162,500,514,520,623,624,631,1900,4500,5353 <RHOST> -oA nmap_udp_critical_<RHOST>
-```
 
-```bash
 # Targeted UDP scan with service detection on key ports
 sudo nmap -sU -sV -p 53,69,123,161,500 <RHOST> -oA nmap_udp_services_<RHOST>
 ```
@@ -575,14 +497,10 @@ Create organized folder structure:
 ```bash
 # Create organized recon directory structure for the host
 mkdir -p recon/<RHOST>/{nmap,web,smb,notes}
-```
 
-```bash
 # Move all scan files for this host into the Nmap directory
 mv *<RHOST>* recon/<RHOST>/nmap/
-```
 
-```bash
 # Copy host and port lists into the host recon directory
 cp live_hosts.txt tcp_ports.txt recon/<RHOST>/
 ```
@@ -592,24 +510,16 @@ cp live_hosts.txt tcp_ports.txt recon/<RHOST>/
 ```bash
 # Run Nmap vulnerability scripts against all discovered services
 sudo nmap -A -T4 -sC -sV --script vuln <RHOST> -oA nmap_vuln_tcp_<RHOST>
-```
 
-```bash
 # Check SMB services for known vulnerabilities
 sudo nmap --script smb-vuln* -p 139,445 <RHOST>
-```
 
-```bash
 # Check HTTPS service for Heartbleed and related SSL issues
 sudo nmap --script ssl-heartbleed -p 443 <RHOST>
-```
 
-```bash
 # Update Nuclei templates
 nuclei -ut
-```
 
-```bash
 # Run Nuclei scanner against HTTP target
 nuclei -target http://<RHOST> -o nuclei_<RHOST>.txt
 ```
@@ -625,39 +535,19 @@ For each open port, grab manual banners even if Nmap detected them:
 ```bash
 # Raw TCP banner grab
 nc -nv <RHOST> <PORT>
-```
 
-```bash
-# HTTP banner #1
+# HTTP banner 
 echo -e "HEAD / HTTP/1.0\r\n\r\n" | nc -nv <RHOST> 80
-```
-
-```bash
-# HTTP banner #2
 curl -I http://<RHOST>/
-```
-
-```bash
-# HTTP banner #3
 curl -s http://<RHOST>/ | head -50
-```
-
-```bash
-# HTTPS banner
 curl -k -I https://<RHOST>/
-```
 
-```bash
 # Telnet for interactive services
 telnet <RHOST> <PORT>
-```
 
-```bash
 # Verbose curl for headers (HTTP)
 curl -v http://<RHOST>/
-```
 
-```bash
 # Verbose curl for headers (HTTPS)
 curl -v -k https://<RHOST>/
 ```
@@ -679,14 +569,10 @@ nmap -sV --script=banner -p <PORT> <RHOST>
 ```bash
 # SSH connection with null authentication attempt
 ssh -o PreferredAuthentications=none -o ConnectTimeout=5 <RHOST>
-```
 
-```bash
 # Verbose SSH to enumerate supported authentication mechanisms
 ssh -v <RHOST> 2>&1 | grep "Authentications that can continue"
-```
 
-```bash
 # Nmap SSH enumeration: algorithms, host keys, authentication methods
 nmap -p 22 --script ssh2-enum-algos,ssh-hostkey,ssh-auth-methods <RHOST>
 ```
@@ -696,9 +582,7 @@ nmap -p 22 --script ssh2-enum-algos,ssh-hostkey,ssh-auth-methods <RHOST>
 ```bash
 # Connect to FTP (try anonymous login)
 ftp <RHOST> # Try: anonymous / anonymous
-```
 
-```bash
 # Nmap FTP enumeration
 nmap -p 21 --script ftp-anon,ftp-bounce,ftp-syst <RHOST>
 ```
@@ -708,9 +592,7 @@ nmap -p 21 --script ftp-anon,ftp-bounce,ftp-syst <RHOST>
 ```bash
 # Banner grab and testing with Netcat
 nc -nv <RHOST> 25 # Tru: HELO test, VRFY root, EXPN admin
-```
 
-```bash
 # Telnet for interactive SMTP commands
 telnet <RHOST> 25
 ```
@@ -720,9 +602,7 @@ telnet <RHOST> 25
 ```bash
 # Enumerate RPC services
 rpcinfo -p <RHOST>
-```
 
-```bash
 # Nmap RPC enumeration
 nmap -p 111 --script rpcinfo <RHOST>
 ```
@@ -734,30 +614,19 @@ Focus on protocol support, cipher strength, certificate issues, and obvious SSL/
 ```bash
 # Nmap cipher suites + certificate info
 nmap -p 443,8443,9443 --script ssl-enum-ciphers,ssl-cert <RHOST>
-```
 
-```bash
 # Check for common SSL/TLS vulns
 nmap -p 443 --script ssl-heartbleed,ssl-poodle,ssl-dh-params <RHOST>
-```
 
-```bash
 # testssl.sh quick profile (very verbose but excellent overview)
 testssl.sh --fast --sneaky https://<RHOST>/
-```
 
-```bash
 # Focus on protocols and known vulns only
 testssl.sh --fast --sneaky --protocols --vulnerable https://<RHOST>/
-```
 
-
-```bash
 # sslscan summary
 sslscan --no-failed --show-certificate <RHOST>:443
-```
 
-```bash
 # sslyze (if installed)
 sslyze --regular <RHOST>:443
 ```
@@ -770,42 +639,18 @@ Treat every HTTP(S) port as separate (80, 443, 8080, 8443, etc.).
 ### 4.1 Initial fingerprinting
 
 ```bash
-# Whatweb fingerprinting #1
+# Whatweb fingerprinting
 whatweb -a 3 http://<RHOST>:<PORT>/
-```
-
-```bash
-# Whatweb fingerprinting #3
 whatweb -a 4 http://<RHOST>:<PORT>/
-```
-
-```bash
-# Whatweb fingerprinting #3
 whatweb -a 3 https://<RHOST>:<PORT>/
-```
 
-```bash
-# Headers and redirects #1
+# Headers and redirects
 curl -I http://<RHOST>:<PORT>/
-```
-
-```bash
-# Headers and redirects #2
 curl -k -I https://<RHOST>:<PORT>/
-```
-
-```bash
-# Headers and redirects #3
 curl -v http://<RHOST>:<PORT>/ 2>&1 | head -50
-```
 
-```bash
-# Nmap HTTP scripts #1
+# Nmap HTTP scripts
 nmap -p <PORT> --script http-headers,http-methods,http-title <RHOST>
-```
-
-```bash
-# Nmap HTTP scripts #1
 nmap -p80 --script=http-enum <RHOST>
 ```
 
@@ -823,23 +668,17 @@ gobuster dir -u http://<RHOST>:<PORT>/ \
   -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt \
   -x php,html,js,txt,bak,old,zip,sql \
   -t 50 -o web_gobuster_dirs_<RHOST>_<PORT>.txt
-```
 
-```bash
 # With common wordlist
 gobuster dir -u http://<RHOST>:<PORT>/ \
   -w /usr/share/wordlists/dirb/common.txt \
   -x php,html,txt -t 50 -o web_gobuster_common.txt
-```
 
-```bash
 # Ignore SSL errors
 gobuster dir -u https://<RHOST>:<PORT>/ \
   -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt \
   -k -t 50
-```
 
-```bash
 # DNS subdomain enumeration
 gobuster dns -d <DOMAIN> \
   -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt \
@@ -854,9 +693,7 @@ feroxbuster -u http://<RHOST>:<PORT>/ \
   -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt \
   -x php,html,js,txt \
   -C 404,403 -t 50 -o web_ferox_<RHOST>_<PORT>.txt
-```
 
-```bash
 # Recursive directory enumeration with depth limit
 feroxbuster -u http://<RHOST>:<PORT>/ \
   -w /usr/share/wordlists/dirb/common.txt \
@@ -870,28 +707,20 @@ feroxbuster -u http://<RHOST>:<PORT>/ \
 ffuf -w /usr/share/wordlists/dirb/common.txt \
   -u http://<RHOST>:<PORT>/FUZZ \
   -mc 200,204,301,302,307,401 -o ffuf_dirs_<RHOST>_<PORT>.txt
-```
 
-```bash
 # Basic directory fuzzing with extensions
 ffuf -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-small.txt \
   -u http://<RHOST>:<PORT>/FUZZ \
   -e .php,.html,.txt,.bak,.zip,.log
-```
 
-```bash
 # Recursive scanning
 ffuf -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-small.txt \
   -u http://<RHOST>:<PORT>/FUZZ -recursion
-```
 
-```bash
 # VHost fuzzing
 ffuf -c -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt \
   -u http://<RHOST>:<PORT>/ -H "Host: FUZZ.<DOMAIN>" -fs <BASE_SIZE>
-```
 
-```bash
 # Parameter fuzzing
 ffuf -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt \
   -u http://<RHOST>/page?FUZZ=test -mc 200
@@ -904,9 +733,7 @@ ffuf -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt \
 dirsearch -u http://<RHOST>:<PORT>/ -x 403,404 \
   -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt \
   -R 2 -e php,html,txt
-```
 
-```bash
 # Basic directory fuzzing with extensions and authentication
 dirsearch -u http://<RHOST>:<PORT>/ -x 403,400,404,401 \
   -r -R 2 --auth=<USER>:<PASS> --auth-type=basic
@@ -917,9 +744,7 @@ dirsearch -u http://<RHOST>:<PORT>/ -x 403,400,404,401 \
 ```bash
 # Basic directory fuzzing
 dirb http://<RHOST>:<PORT>/ /usr/share/wordlists/dirb/common.txt
-```
 
-```bash
 # Directory fuzzing with huge wordlist
 dirb http://<RHOST>:<PORT>/ /usr/share/dirb/wordlists/big.txt -o dirb_output.txt
 ```
@@ -931,36 +756,22 @@ dirb http://<RHOST>:<PORT>/ /usr/share/dirb/wordlists/big.txt -o dirb_output.txt
 for file in robots.txt sitemap.xml crossdomain.xml .well-known/security.txt; do
   echo "=== $file ===" && curl -s "http://<RHOST>:<PORT>/$file" | head -50
 done
-```
 
-```bash
 # Check for backup files
 for ext in bak old tmp backup zip tar.gz sql; do
   curl -s -o /dev/null -w "%{http_code}" "http://<RHOST>:<PORT>/index.$ext"
 done
-```
 
-```bash
-# Git exposure check #1
+# Git exposure check
 curl -s http://<RHOST>:<PORT>/.git/HEAD
-```
-
-```bash
-# Git exposure check #2
 curl -s http://<RHOST>:<PORT>/.git/config
-```
 
-```bash
 # SVN exposure
 curl -s http://<RHOST>:<PORT>/.svn/entries
-```
 
-```bash
 # DS_Store (Mac)
 curl -s http://<RHOST>:<PORT>/.DS_Store
-```
 
-```bash
 # Common config files
 for f in config.php config.inc.php wp-config.php web.config .htaccess .env; do
   curl -s -o /dev/null -w "$f: %{http_code}\n" "http://<RHOST>:<PORT>/$f"
@@ -984,25 +795,17 @@ Document in host notes:
 ```bash
 # Basic enumeration
 wpscan --url http://<RHOST>/ --enumerate u,t,p
-```
 
-```bash
 # Aggressive plugin detection
 wpscan --url http://<RHOST>/ --plugins-detection aggressive
-```
 
-```bash
 # Full enumeration with API token
 wpscan --url http://<RHOST>/ --enumerate vp,vt,tt,cb,dbe,u,m \
   --plugins-detection aggressive --plugins-version-detection aggressive
-```
 
-```bash
 # Brute force login
 wpscan --url http://<RHOST>/ -U <USERNAME> -P /usr/share/wordlists/rockyou.txt
-```
 
-```bash
 # Ignore SSL errors
 wpscan --url https://<RHOST>/ --disable-tls-checks --enumerate u,t,p
 ```
@@ -1012,9 +815,7 @@ wpscan --url https://<RHOST>/ --disable-tls-checks --enumerate u,t,p
 ```bash
 # Basic Joomla scan against the target
 joomscan -u http://<RHOST>/
-```
 
-```bash
 # Joomla scan with component enumeration
 joomscan --ec -u http://<RHOST>/
 ```
@@ -1040,19 +841,13 @@ cmsmap -F -d http://<RHOST>/
 ```bash
 # Nikto scan against the specified HTTP service
 nikto -h http://<RHOST>:<PORT>/
-```
 
-```bash
 # Nikto with max scan time and text output
 nikto -h http://<RHOST>:<PORT>/ -maxtime 30m -o nikto_<RHOST>.txt
-```
 
-```bash
 # Nikto with tuning and HTML report
 nikto -h http://<RHOST>:<PORT>/ -Tuning 123bde -o report.html -Format htm
-```
 
-```bash
 # Through proxy
 nikto -useproxy http://<PROXY_IP>:3128 -h http://<RHOST>/
 ```
@@ -1068,45 +863,28 @@ nikto -useproxy http://<PROXY_IP>:3128 -h http://<RHOST>/
 ```bash
 # List SMB shares on the target using a null session
 smbclient -L //<RHOST> -N
-```
 
-```bash
 # List SMB shares on the target explicitly using an empty username and null session
 smbclient -L //<RHOST>/ -U '' -N
-```
 
-```bash
 # Enumerate shares/permissions on the target host
 smbmap -H <RHOST>
-```
 
-```bash
 # Enumerate shares/permissions using the username "anonymous"
 smbmap -H <RHOST> -u anonymous
-```
 
-```bash
 # Enumerate shares/permissions using empty username and empty password
 smbmap -H <RHOST> -u '' -p ''
-```
 
-
-```bash
 # Recursively list accessible directories/files across shares (can be noisy)
 smbmap -H <RHOST> -R
-```
 
-```bash
 # Attempt to connect to the IPC$ share with a null session
 smbclient //<RHOST>/IPC$ -N
-```
 
-```bash
 # Attempt to connect to the ADMIN$ share with a null session
 smbclient //<RHOST>/ADMIN$ -N
-```
 
-```bash
 # Attempt to connect to the C$ administrative share with a null session
 smbclient //<RHOST>/C$ -N
 ```
@@ -1116,19 +894,13 @@ smbclient //<RHOST>/C$ -N
 ```bash
 # Authenticated smbmap enumeration (user/pass)
 smbmap -H <RHOST> -u '<USER>' -p '<PASS>'
-```
 
-```bash
 # Authenticated smbmap enumeration with an explicit domain
 smbmap -H <RHOST> -u '<USER>' -p '<PASS>' -d <DOMAIN>
-```
 
-```bash
 # Connect to a specific SMB share using user%pass syntax
 smbclient //<RHOST>/<SHARE> -U '<USER>%<PASS>'
-```
 
-```bash
 # Recursive smbmap listing, limited to 5 levels deep
 smbmap -H <RHOST> -u '<USER>' -p '<PASS>' -R --depth 5
 ```
@@ -1139,11 +911,9 @@ smbmap -H <RHOST> -u '<USER>' -p '<PASS>' -R --depth 5
 # Null session connect to RPC endpoint (no user, no password)
 rpcclient -U "" -N <RHOST>
 
-```bash
 # Enumerate domain users via RPC using null session
 rpcclient -U "" <RHOST> -N -c "enumdomusers"
 
-```bash
 # Enumerate domain groups via RPC using null session
 rpcclient -U "" <RHOST> -N -c "enumdomgroups"
 ```
@@ -1155,9 +925,7 @@ rpcclient -U "" <RHOST> -N -c "enumdomgroups"
 ```bash
 # Connect to the share (drops into smb: \> prompt)
 smbclient //<RHOST>/<SHARE> -U '<USER>%<PASS>'
-```
 
-```bash
 # Enable recursive directory traversal for subsequent commands
 smb: \> recurse ON
 
@@ -1176,19 +944,13 @@ smb: \> mget *
 ```bash
 # Identify file types 
 file *
-```
 
-```bash
 # Quick string sweep for readable artifacts (min length 8)
 strings -n 8 *
-```
 
-```bash
 # Grep for common secret keywords (case-insensitive, recursive, with line numbers)
 grep -RniE "pass|pwd|secret|token|key|cred" .
-```
 
-```bash
 # Find common config/text files, then search for lines/files mentioning "password"
 find . -name "*.txt" -o -name "*.xml" -o -name "*.ini" -o -name "*.conf" | xargs grep -l password
 ```
@@ -1198,14 +960,10 @@ find . -name "*.txt" -o -name "*.xml" -o -name "*.ini" -o -name "*.conf" | xargs
 ```bash
 # Create a local mountpoint for the SMB share
 mkdir /tmp/share
-```
 
-```bash
 # Mount SMB share interactively (may prompt for creds depending on target)
 sudo mount -t cifs //<RHOST>/<SHARE> /tmp/share
-```
 
-```bash
 # Mount SMB share with explicit credentials (non-interactive)
 sudo mount -t cifs -o 'username=<USER>,password=<PASSWORD>' //<RHOST>/<SHARE> /tmp/share
 ```
@@ -1217,19 +975,13 @@ sudo mount -t cifs -o 'username=<USER>,password=<PASSWORD>' //<RHOST>/<SHARE> /t
 ```bash
 # Full enum4linux sweep; save output to a file
 enum4linux -a <RHOST> | tee enum4linux_<RHOST>.txt
-```
 
-```bash
 # Enumerate users
 enum4linux -U <RHOST> 
-```
 
-```bash
 # Enumerate groups
 enum4linux -G <RHOST>
-```
 
-```bash
 # Enumerate shares
 enum4linux -S <RHOST>  
 ```
@@ -1246,14 +998,10 @@ enum4linux-ng -A <RHOST> -oA enum4linux_ng_<RHOST>
 ```bash
 # Nmap SMB scripts
 nmap -p 139,445 --script smb-os-discovery,smb-enum-shares,smb-enum-users,smb-enum-groups,smb-security-mode <RHOST> -oA nmap_smb_<RHOST>
-```
 
-```bash
 # Nmap comprehensive SMB enumeration
 nmap -p 445 --script "smb-enum-*" <RHOST>
-```
 
-```bash
 # Nmap SMB Version detection
 nmap -p 139,445 --script smb-protocols <RHOST>
 ```
@@ -1265,34 +1013,22 @@ Here's the reformatted content with 2 NetExec examples and the rest using CrackM
 ```bash
 # Run NetExec (nxc alias) SMB module against the target (basic info + default checks)
 nxc smb <RHOST>
-```
 
-```bash
 # Run NetExec SMB module with null session
 nxc smb <RHOST> -u '' -p ''
-```
 
-```bash
 # Run CrackMapExec SMB module against the target
 crackmapexec smb <RHOST>
-```
 
-```bash
 # Authenticate to SMB and enumerate active SMB sessions on the target
 crackmapexec smb <RHOST> -u '' -p '' --sessions
-```
 
-```bash
 # Authenticate to SMB and enumerate users currently logged on to the target
 crackmapexec smb <RHOST> -u '' -p '' --loggedon-users
-```
 
-```bash
 # Spider shares for files
 crackmapexec smb <RHOST> -u '' -p '' -M spider_plus
-```
 
-```bash
 # Password spray
 crackmapexec smb <RHOST> -u users.txt -p '' --continue-on-success
 ```
@@ -1302,29 +1038,19 @@ crackmapexec smb <RHOST> -u users.txt -p '' --continue-on-success
 ```bash
 # Check for EternalBlue (MS17-010) vulnerability
 nmap -p 445 --script smb-vuln-ms17-010 <RHOST>
-```
 
-```bash
 # Check for MS08-067 (NetAPI) SMB vulnerability
 nmap -p 445 --script smb-vuln-ms08-067 <RHOST>
-```
 
-```bash
 # Check for CVE-2017-7494 (Samba remote code execution via writable share)
 nmap -p 445 --script smb-vuln-cve-2017-7494 <RHOST>
-```
 
-```bash
 # Check for all SMB vulnerabilities
 nmap -p 139,445 --script smb-vuln* <RHOST>
-```
 
-```bash
 # Check signing (Nmap)
 nmap -p 445 --script smb-security-mode <RHOST>
-```
 
-```bash
 # Check signing (NetExec)
 nxc smb <RHOST> --gen-relay-list relay.txt
 ```
@@ -1338,34 +1064,22 @@ nxc smb <RHOST> --gen-relay-list relay.txt
 ```bash
 # Scan common RPC/NFS ports and run rpcinfo NSE
 nmap -p 111,2049,32769 --script rpcinfo <RHOST> -oA nmap_rpc_<RHOST>
-```
 
-```bash
 # List RPC programs/versions/ports via portmapper
 rpcinfo -p <RHOST>
-```
 
-```bash
 # Quick RPC reachability/info check
 rpcinfo <RHOST>
-```
 
-```bash
 # List exported NFS filesystems
 showmount -e <RHOST>
-```
 
-```bash
 # Show clients and their mount points (if exposed)
 showmount -a <RHOST>  
-```
 
-```bash
 # Show only export directory names
 showmount -d <RHOST>  
-```
 
-```bash
 # Run NFS NSE scripts (list, exports, filesystem stats)
 nmap -p 111 --script nfs-ls,nfs-showmount,nfs-statfs <RHOST>
 ```
@@ -1375,29 +1089,19 @@ nmap -p 111 --script nfs-ls,nfs-showmount,nfs-statfs <RHOST>
 ```bash
 # Create a local mount point directory
 sudo mkdir -p /mnt/nfs/<RHOST>/<SHARE_NAME>
-```
 
-```bash
 # Mount the NFS export with default settings
 sudo mount -t nfs <RHOST>:/<EXPORT> /mnt/nfs/<RHOST>/<SHARE_NAME>
-```
 
-```bash
 # Mount forcing NFSv3 and disabling locking (common for compatibility)
 sudo mount -t nfs -o nolock,vers=3 <RHOST>:/<EXPORT> /mnt/nfs/<RHOST>/<SHARE_NAME>
-```
 
-```bash
 # Mount forcing NFSv2 (legacy targets)
 sudo mount -t nfs -o nolock,vers=2 <RHOST>:/<EXPORT> /mnt/nfs/<RHOST>/<SHARE_NAME>
-```
 
-```bash
 # Confirm mounts and usage
 df -h | grep nfs
-```
 
-```bash
 # Confirm active NFS mounts (mount table)
 mount | grep nfs
 ```
@@ -1413,9 +1117,7 @@ ls -la /mnt/nfs/<RHOST>/<SHARE_NAME>/
 find /mnt/nfs/<RHOST>/<SHARE_NAME> \
   -name "*.pem" -o -name "*.key" -o -name "*.sql" -o -name "*.db" \
   -o -name "*.conf" -o -name "*.cfg" -o -name "*.ini" 2>/dev/null
-```
 
-```bash
 # Find SSH keys
 find /mnt/nfs/<RHOST>/<SHARE_NAME> -name "id_rsa*" -o -name "id_dsa*" -o -name "known_hosts" 2>/dev/null
 ```
@@ -1458,37 +1160,19 @@ sudo umount /mnt/nfs/<RHOST>/<SHARE_NAME>
 ### 7.1 RootDSE and naming contexts
 
 ```bash
-# Anonymous bind - base info #1
+# Anonymous bind - base info
 ldapsearch -x -h <RHOST> -s base
-```
-
-```bash
-# Anonymous bind - base info #2
 ldapsearch -x -h <RHOST> -s base namingcontexts
-```
-
-```bash
-# Anonymous bind - base info #3
 ldapsearch -x -H ldap://<RHOST> -s base
-```
 
-```bash
 # Get supported controls
 ldapsearch -x -h <RHOST> -s base supportedControl
-```
 
-```bash
 # Get supported extensions
 ldapsearch -x -h <RHOST> -s base supportedExtension
-```
 
-```bash
-# Nmap LDAP scripts #1
+# Nmap LDAP scripts
 nmap -p 389,636 --script ldap-rootdse <RHOST>
-```
-
-```bash
-# Nmap LDAP scripts #2
 nmap -p 389,636 --script ldap-search <RHOST>
 ```
 
@@ -1526,9 +1210,7 @@ ldapsearch -x -H ldap://<RHOST> -D "<USER>@<DOMAIN>" -w '<PASS>' -b "DC=<DOMAIN>
 ```bash
 # Dump AD LDAP domain objects using creds, target as host (defaults to LDAP)
 ldapdomaindump -u '<DOMAIN>\<USER>' -p '<PASS>' <RHOST>
-```
 
-```bash
 # Dump AD LDAP domain objects using creds, target explicitly via LDAP URI
 ldapdomaindump -u '<DOMAIN>\<USER>' -p '<PASS>' ldap://<RHOST>
 ```
@@ -1545,14 +1227,10 @@ Look for:
 ```bash
 # Check for domain controller ports
 nmap -p 53,88,135,139,389,445,464,593,636,3268,3269 <RHOST>
-```
 
-```bash
 # DNS SRV records for DC #1
 dig _ldap._tcp.<DOMAIN> SRV
-```
 
-```bash
 # DNS SRV records for DC #2
 dig _kerberos._tcp.<DOMAIN> SRV
 ```
@@ -1564,31 +1242,19 @@ dig _kerberos._tcp.<DOMAIN> SRV
 ### 8.1 Community discovery
 
 ```bash
-# Onesixtyone community string brute force #1
+# Onesixtyone community string brute force
 onesixtyone -c /usr/share/seclists/Discovery/SNMP/common-snmp-community-strings.txt <RHOST>
-```
-
-```bash
-# Onesixtyone community string brute force #2
 onesixtyone -c /usr/share/seclists/Discovery/SNMP/snmp-onesixtyone.txt <RHOST>
-```
 
-```bash
 # Multiple hosts
 onesixtyone -c community.txt -i hosts.txt
-```
 
-```bash
 # snmp-check (public)
 snmp-check <RHOST> -c public
-```
 
-```bash
 # snmp-check (private)
 snmp-check <RHOST> -c private
-```
 
-```bash
 # Nmap SNMP brute force
 nmap -sU -p 161 --script snmp-brute <RHOST>
 ```
@@ -1598,59 +1264,37 @@ nmap -sU -p 161 --script snmp-brute <RHOST>
 ```bash
 # SNMP walk version 1
 snmpwalk -v1 -c public <RHOST>
-```
 
-```bash
 # SNMP walk version 2c
 snmpwalk -v2c -c public <RHOST>
-```
 
-```bash
 # SNMP walk entire MIB tree
 snmpwalk -v2c -c public <RHOST> .1
-```
 
-```bash
 # System information OID
 snmpwalk -v2c -c public <RHOST> 1.3.6.1.2.1.1
-```
 
-```bash
 # Network interfaces OID
 snmpwalk -v2c -c public <RHOST> 1.3.6.1.2.1.2.2 
-```
 
-```bash
 # Running processes OID
 snmpwalk -v2c -c public <RHOST> 1.3.6.1.2.1.25.4.2.1.2
-```
 
-```bash
 # Host resources OID
 snmpwalk -v2c -c public <RHOST> 1.3.6.1.2.1.25.1
-```
 
-```bash
 # Installed software OID
 snmpwalk -v2c -c public <RHOST> 1.3.6.1.2.1.25.6.3.1.2 
-```
 
-```bash
 # Windows user accounts OID
 snmpwalk -v1 -c public <RHOST> 1.3.6.1.4.1.77.1.2.25
-```
 
-```bash
 # Windows domain OID
 snmpwalk -v2c -c public <RHOST> 1.3.6.1.4.1.77.1.4.1
-```
 
-```bash
 # Extended enumeration with snmp-check
 snmp-check -v2c -c public <RHOST> -w
-```
 
-```bash
 # Bulk get for faster enumeration
 snmpbulkwalk -v2c -c public <RHOST>
 ```
@@ -1660,14 +1304,10 @@ snmpbulkwalk -v2c -c public <RHOST>
 ```bash
 # Get hostname
 snmpget -v2c -c public <RHOST> 1.3.6.1.2.1.1.5.0
-```
 
-```bash
 # Get system description
 snmpget -v2c -c public <RHOST> 1.3.6.1.2.1.1.1.0
-```
 
-```bash
 # Get uptime
 snmpget -v2c -c public <RHOST> 1.3.6.1.2.1.1.3.0
 ```
@@ -1681,42 +1321,28 @@ snmpget -v2c -c public <RHOST> 1.3.6.1.2.1.1.3.0
 ```bash
 # Get nameservers using dig
 dig ns <DOMAIN> @<DNS_SERVER> +short
-```
 
-```bash
 # Get nameservers using Cloudflare DNS
 dig ns <DOMAIN> @1.1.1.1 +short
-```
 
-```bash
 # Get nameservers using host
 host -t ns <DOMAIN>
-```
 
-```bash
 # Attempt zone transfer with dig
 dig axfr <DOMAIN> @<NS_SERVER>
-```
 
-```bash
 # Attempt zone transfer alternate syntax
 dig axfr @<DNS_SERVER> <DOMAIN>
-```
 
-```bash
 # Attempt zone transfer with host
 host -l <DOMAIN> <NS_SERVER>
-```
 
-```bash
 # Loop through all nameservers for zone transfer
 for ns in $(dig ns <DOMAIN> +short); do
   echo "Trying AXFR against $ns"
   dig axfr <DOMAIN> @$ns
 done
-```
 
-```bash
 # Zone transfer using dnsrecon
 dnsrecon -d <DOMAIN> -t axfr
 ```
@@ -1728,24 +1354,16 @@ dnsrecon -d <DOMAIN> -t axfr
 ```bash
 # Gobuster DNS enumeration
 gobuster dns -d <DOMAIN> -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -t 50 -o dns_gobuster_<DOMAIN>.txt
-```
 
-```bash
 # DNSrecon brute force
 dnsrecon -d <DOMAIN> -D /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -t brt
-```
 
-```bash
 # Fierce subdomain scanner
 fierce --domain <DOMAIN>
-```
 
-```bash
 # Fierce with custom DNS server
 fierce --domain <DOMAIN> --dns-servers <DNS_SERVER>
-```
 
-```bash
 # Wfuzz DNS fuzzing
 wfuzz -c -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -u "http://<DOMAIN>" -H "Host: FUZZ.<DOMAIN>" --hc 404
 ```
@@ -1755,14 +1373,10 @@ wfuzz -c -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -u
 ```bash
 # Sublist3r passive enumeration
 sublist3r -d <DOMAIN> -o subdomains_<DOMAIN>.txt
-```
 
-```bash
 # Amass passive enumeration
 amass enum -passive -d <DOMAIN> -o amass_passive.txt
-```
 
-```bash
 # DNSrecon comprehensive scan
 dnsrecon -d <DOMAIN> -a -z -s -b -r 8.8.8.8
 ```
@@ -1775,49 +1389,31 @@ for type in A AAAA MX TXT SOA NS SRV CNAME PTR; do
   echo "=== $type ==="
   dig $type <DOMAIN> +short
 done
-```
 
-```bash
 # Query all record types
 dig <DOMAIN> ANY +noall +answer
-```
 
-```bash
 # Get MX records
 dig <DOMAIN> MX +short
-```
 
-```bash
 # Get TXT records
 dig <DOMAIN> TXT +short
-```
 
-```bash
 # Get MX records with host
 host -t mx <DOMAIN>
-```
 
-```bash
 # Get TXT records with host
 host -t txt <DOMAIN>
-```
 
-```bash
 # Reverse DNS lookup
 dig -x <IP_ADDRESS>
-```
 
-```bash
 # Reverse DNS with host
 host <IP_ADDRESS>
-```
 
-```bash
 # Check SPF record
 dig txt <DOMAIN> | grep "v=spf"
-```
 
-```bash
 # Check DMARC record
 dig txt _dmarc.<DOMAIN>
 ```
@@ -1831,9 +1427,7 @@ dig txt _dmarc.<DOMAIN>
 ```bash
 # Automated anonymous login check with nmap
 nmap -p 21 --script ftp-anon <RHOST>
-```
 
-```bash
 # Anonymous login with lftp
 lftp <RHOST>
 ```
@@ -1843,29 +1437,19 @@ lftp <RHOST>
 ```bash
 # Banner grab with netcat
 nc -nv <RHOST> 21
-```
 
-```bash
 # Version detection with nmap
 nmap -sV -p 21 <RHOST>
-```
 
-```bash
 # FTP enumeration scripts
 nmap -p 21 --script ftp-anon,ftp-bounce,ftp-syst,ftp-vsftpd-backdoor,ftp-proftpd-backdoor <RHOST>
-```
 
-```bash
 # FTP vulnerability scan
 nmap -p 21 --script ftp-vuln* <RHOST>
-```
 
-```bash
 # Search for vsftpd exploits
 searchsploit vsftpd
-```
 
-```bash
 # Search for proftpd exploits
 searchsploit proftpd
 ```
@@ -1875,9 +1459,7 @@ searchsploit proftpd
 ```bash
 # Recursive download with wget
 wget -r ftp://anonymous:anonymous@<RHOST>/
-```
 
-```bash
 # Mirror FTP directory
 wget -m --no-passive ftp://anonymous:anonymous@<RHOST>/
 ```
@@ -1891,29 +1473,19 @@ wget -m --no-passive ftp://anonymous:anonymous@<RHOST>/
 ```bash
 # SSH banner grab with netcat
 nc -nv <RHOST> 22
-```
 
-```bash
 # SSH banner grab with telnet
 telnet <RHOST> 22
-```
 
-```bash
 # SSH version detection
 nmap -sV -p 22 <RHOST>
-```
 
-```bash
 # Enumerate SSH algorithms
 nmap -p 22 --script ssh2-enum-algos <RHOST>
-```
 
-```bash
 # Get SSH host key
 nmap -p 22 --script ssh-hostkey <RHOST>
-```
 
-```bash
 # SSH key scan
 ssh-keyscan <RHOST>
 ```
@@ -1923,19 +1495,13 @@ ssh-keyscan <RHOST>
 ```bash
 # Check authentication methods
 ssh -o PreferredAuthentications=none -o ConnectTimeout=5 <RHOST>
-```
 
-```bash
 # Verbose authentication check
 ssh -v <RHOST> 2>&1 | grep "Authentications that can continue"
-```
 
-```bash
 # Nmap authentication methods scan
 nmap -p 22 --script ssh-auth-methods <RHOST>
-```
 
-```bash
 # Public key acceptance test
 nmap -p 22 --script ssh-publickey-acceptance <RHOST>
 ```
@@ -1945,19 +1511,13 @@ nmap -p 22 --script ssh-publickey-acceptance <RHOST>
 ```bash
 # Hydra SSH single user
 hydra -l <USER> -P /usr/share/wordlists/rockyou.txt ssh://<RHOST>
-```
 
-```bash
 # Hydra SSH user and password lists
 hydra -L users.txt -P passwords.txt ssh://<RHOST> -t 4
-```
 
-```bash
 # Medusa SSH brute force
 medusa -h <RHOST> -u <USER> -P /usr/share/wordlists/rockyou.txt -M ssh
-```
 
-```bash
 # NetExec SSH brute force
 nxc ssh <RHOST> -u <USER> -p /usr/share/wordlists/rockyou.txt
 ```
@@ -1971,34 +1531,22 @@ nxc ssh <RHOST> -u <USER> -p /usr/share/wordlists/rockyou.txt
 ```bash
 # SMTP connection with netcat
 nc -nv <RHOST> 25
-```
 
-```bash
 # SMTP connection with telnet
 telnet <RHOST> 25
-```
 
-```bash
 # SMTP enumeration scripts
 nmap -p 25 --script smtp-commands,smtp-enum-users <RHOST>
-```
 
-```bash
 # SMTP user enumeration with multiple methods
 nmap -p 25 --script smtp-enum-users --script-args smtp-enum-users.methods={VRFY,EXPN,RCPT} <RHOST>
-```
 
-```bash
 # SMTP user enum with VRFY
 smtp-user-enum -M VRFY -U /usr/share/seclists/Usernames/Names/names.txt -t <RHOST>
-```
 
-```bash
 # SMTP user enum with EXPN
 smtp-user-enum -M EXPN -U users.txt -t <RHOST>
-```
 
-```bash
 # SMTP user enum with RCPT
 smtp-user-enum -M RCPT -U users.txt -D <DOMAIN> -t <RHOST>
 ```
@@ -2019,34 +1567,22 @@ nmap -p 25 --script smtp-open-relay <RHOST>
 ```bash
 # POP3 connection with netcat
 nc -nv <RHOST> 110
-```
 
-```bash
 # POP3 connection with telnet
 telnet <RHOST> 110
-```
 
-```bash
 # POP3S secure connection
 openssl s_client -connect <RHOST>:995 -quiet
-```
 
-```bash
 # IMAP connection with netcat
 nc -nv <RHOST> 143
-```
 
-```bash
 # IMAP connection with telnet
 telnet <RHOST> 143
-```
 
-```bash
 # IMAPS secure connection
 openssl s_client -connect <RHOST>:993 -quiet
-```
 
-```bash
 # Nmap POP3/IMAP capabilities
 nmap -p 110,143,993,995 --script pop3-capabilities,imap-capabilities <RHOST>
 ```
@@ -2056,9 +1592,7 @@ nmap -p 110,143,993,995 --script pop3-capabilities,imap-capabilities <RHOST>
 ```bash
 # Hydra POP3 brute force
 hydra -l <USER> -P /usr/share/wordlists/rockyou.txt <RHOST> pop3
-```
 
-```bash
 # Hydra IMAP brute force
 hydra -l <USER> -P /usr/share/wordlists/rockyou.txt <RHOST> imap
 ```
@@ -2072,19 +1606,13 @@ hydra -l <USER> -P /usr/share/wordlists/rockyou.txt <RHOST> imap
 ```bash
 # List RPC services detailed
 rpcinfo -p <RHOST>
-```
 
-```bash
 # List RPC services
 rpcinfo <RHOST>
-```
 
-```bash
 # Nmap RPC enumeration
 nmap -p 111 --script rpcinfo <RHOST>
-```
 
-```bash
 # Nmap RPC with version detection
 nmap -sV -p 111 --script=rpcinfo <RHOST>
 ```
@@ -2094,19 +1622,13 @@ nmap -sV -p 111 --script=rpcinfo <RHOST>
 ```bash
 # Connect with null session
 rpcclient -U "" -N <RHOST>
-```
 
-```bash
 # Enumerate domain users one-liner
 rpcclient -U "" <RHOST> -N -c "enumdomusers" 2>/dev/null
-```
 
-```bash
 # Enumerate domain groups one-liner
 rpcclient -U "" <RHOST> -N -c "enumdomgroups" 2>/dev/null
-```
 
-```bash
 # RPC enumeration with credentials
 rpcclient -U '<USER>%<PASS>' <RHOST> -c "enumdomusers"
 ```
@@ -2120,49 +1642,31 @@ rpcclient -U '<USER>%<PASS>' <RHOST> -c "enumdomusers"
 ```bash
 # Nmap MSSQL info script
 nmap -p 1433 --script ms-sql-info <RHOST>
-```
 
-```bash
 # Nmap MSSQL config script
 nmap -p 1433 --script ms-sql-config <RHOST>
-```
 
-```bash
 # Nmap MSSQL empty password check
 nmap -p 1433 --script ms-sql-empty-password <RHOST>
-```
 
-```bash
 # Nmap MSSQL NTLM info
 nmap -p 1433 --script ms-sql-ntlm-info <RHOST>
-```
 
-```bash
 # Nmap MSSQL brute force
 nmap -p 1433 --script ms-sql-brute --script-args userdb=users.txt,passdb=passwords.txt <RHOST>
-```
 
-```bash
 # Impacket mssqlclient Windows auth
 impacket-mssqlclient <USER>@<RHOST> -windows-auth
-```
 
-```bash
 # Impacket mssqlclient with credentials
 impacket-mssqlclient <DOMAIN>/<USER>:<PASS>@<RHOST>
-```
 
-```bash
 # sqsh MSSQL client
 sqsh -S <RHOST> -U <USER> -P <PASS>
-```
 
-```bash
 # NetExec MSSQL authentication
 nxc mssql <RHOST> -u <USER> -p <PASS>
-```
 
-```bash
 # NetExec MSSQL query execution
 nxc mssql <RHOST> -u <USER> -p <PASS> -q "SELECT name FROM master.dbo.sysdatabases"
 ```
@@ -2172,29 +1676,19 @@ nxc mssql <RHOST> -u <USER> -p <PASS> -q "SELECT name FROM master.dbo.sysdatabas
 ```bash
 # MySQL connection with password
 mysql -h <RHOST> -u root -p
-```
 
-```bash
 # MySQL connection without password
 mysql -h <RHOST> -u root
-```
 
-```bash
 # Nmap MySQL info script
 nmap -p 3306 --script mysql-info <RHOST>
-```
 
-```bash
 # Nmap MySQL empty password check
 nmap -p 3306 --script mysql-empty-password <RHOST>
-```
 
-```bash
 # Nmap MySQL enumeration
 nmap -p 3306 --script mysql-enum <RHOST>
-```
 
-```bash
 # Nmap MySQL brute force
 nmap -p 3306 --script mysql-brute --script-args userdb=users.txt,passdb=passwords.txt <RHOST>
 ```
@@ -2204,9 +1698,7 @@ nmap -p 3306 --script mysql-brute --script-args userdb=users.txt,passdb=password
 ```bash
 # PostgreSQL connection
 psql -h <RHOST> -U <USER> -d <DATABASE>
-```
 
-```bash
 # Nmap PostgreSQL brute force
 nmap -p 5432 --script pgsql-brute <RHOST>
 ```
@@ -2220,39 +1712,25 @@ nmap -p 5432 --script pgsql-brute <RHOST>
 ```bash
 # Nmap RDP encryption enumeration
 nmap -p 3389 --script rdp-enum-encryption <RHOST>
-```
 
-```bash
 # Nmap RDP NTLM info
 nmap -p 3389 --script rdp-ntlm-info <RHOST>
-```
 
-```bash
 # Nmap RDP MS12-020 vulnerability check
 nmap -p 3389 --script rdp-vuln-ms12-020 <RHOST>
-```
 
-```bash
 # RDP connection with rdesktop
 rdesktop <RHOST>
-```
 
-```bash
 # RDP connection with xfreerdp
 xfreerdp /v:<RHOST> /u:<USER> /p:<PASS>
-```
 
-```bash
 # RDP connection ignoring certificate
 xfreerdp /v:<RHOST> /u:<USER> /p:<PASS> /cert:ignore
-```
 
-```bash
 # Hydra RDP brute force
 hydra -l <USER> -P /usr/share/wordlists/rockyou.txt rdp://<RHOST>
-```
 
-```bash
 # NetExec RDP brute force
 nxc rdp <RHOST> -u <USER> -p /usr/share/wordlists/rockyou.txt
 ```
@@ -2262,24 +1740,16 @@ nxc rdp <RHOST> -u <USER> -p /usr/share/wordlists/rockyou.txt
 ```bash
 # Nmap VNC info script
 nmap -p 5900 --script vnc-info <RHOST>
-```
 
-```bash
 # Nmap VNC brute force
 nmap -p 5900 --script vnc-brute <RHOST>
-```
 
-```bash
 # VNC connection with display
 vncviewer <RHOST>:<DISPLAY>
-```
 
-```bash
 # VNC connection on port 5900
 vncviewer <RHOST>::5900
-```
 
-```bash
 # Hydra VNC brute force
 hydra -s 5900 -P /usr/share/wordlists/rockyou.txt vnc://<RHOST>
 ```
@@ -2293,24 +1763,16 @@ hydra -s 5900 -P /usr/share/wordlists/rockyou.txt vnc://<RHOST>
 ```bash
 # Get domain info with nxc
 nxc smb <RHOST>
-```
 
-```bash
 # Get shares with null session
 nxc smb <RHOST> -u '' -p '' --shares
-```
 
-```bash
 # LDAP naming contexts
 ldapsearch -x -H ldap://<DC_IP> -s base namingcontexts
-```
 
-```bash
 # BloodHound data collection
 bloodhound-python -c All -u '<USER>' -p '<PASS>' -d <DOMAIN> -dc <DC_HOSTNAME> -ns <DC_IP>
-```
 
-```bash
 # Get domain SID
 rpcclient -U '<USER>%<PASS>' <RHOST> -c "lsaquery"
 ```
@@ -2320,34 +1782,22 @@ rpcclient -U '<USER>%<PASS>' <RHOST> -c "lsaquery"
 ```bash
 # Enumerate domain users with nxc
 nxc smb <DC_IP> -u '<USER>' -p '<PASS>' --users
-```
 
-```bash
 # Enumerate domain groups with nxc
 nxc smb <DC_IP> -u '<USER>' -p '<PASS>' --groups
-```
 
-```bash
 # RID brute force with nxc
 nxc smb <DC_IP> -u '<USER>' -p '<PASS>' --rid-brute
-```
 
-```bash
 # Enumerate users with rpcclient
 rpcclient -U '<USER>%<PASS>' <DC_IP> -c "enumdomusers"
-```
 
-```bash
 # Enumerate groups with rpcclient
 rpcclient -U '<USER>%<PASS>' <DC_IP> -c "enumdomgroups"
-```
 
-```bash
 # LDAP user enumeration
 ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(objectClass=user)' sAMAccountName
-```
 
-```bash
 # Impacket AD user enumeration
 impacket-GetADUsers -all -dc-ip <DC_IP> '<DOMAIN>/<USER>:<PASS>'
 ```
@@ -2357,29 +1807,19 @@ impacket-GetADUsers -all -dc-ip <DC_IP> '<DOMAIN>/<USER>:<PASS>'
 ```bash
 # Kerbrute user enumeration
 kerbrute userenum -d <DOMAIN> --dc <DC_IP> /usr/share/seclists/Usernames/xato-net-10-million-usernames.txt
-```
 
-```bash
 # Kerbrute password spray
 kerbrute passwordspray -d <DOMAIN> --dc <DC_IP> users.txt '<PASSWORD>'
-```
 
-```bash
 # AS-REP roasting without credentials
 impacket-GetNPUsers <DOMAIN>/ -usersfile users.txt -dc-ip <DC_IP> -format hashcat
-```
 
-```bash
 # AS-REP roasting with credentials
 impacket-GetNPUsers '<DOMAIN>/<USER>:<PASS>' -dc-ip <DC_IP> -request
-```
 
-```bash
 # Kerberoasting
 impacket-GetUserSPNs '<DOMAIN>/<USER>:<PASS>' -dc-ip <DC_IP> -request
-```
 
-```bash
 # Nmap Kerberos user enumeration
 nmap -p 88 --script krb5-enum-users --script-args krb5-enum-users.realm='<DOMAIN>',userdb=users.txt <DC_IP>
 ```
@@ -2401,21 +1841,13 @@ Infer OS/role from:
 **OS Fingerprinting commands:**
 
 ```bash
-# Nmap OS detection #1
+# Nmap OS detection
 sudo nmap -O <RHOST>
-```
-
-```bash
-# Nmap OS detection #1
 sudo nmap -O --osscan-guess <RHOST>
-```
 
-```bash
 # TTL-based guess
 ping -c 1 <RHOST> | grep ttl
-```
 
-```bash
 # p0f passive fingerprinting
 p0f -i eth0
 ```

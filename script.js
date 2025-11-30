@@ -11,6 +11,11 @@ let outsideClickListenerAttached = false;
 let suppressParamPanelRender = false;
 let paramSearchTerm = '';
 let resetToastTimeout = null;
+let codeBlockWrappers = [];
+let selectionCopyHandlerAttached = false;
+let lastCopiedSelection = '';
+let lastCopiedWrapper = null;
+let lastCopiedAt = 0;
 const CHECKBOX_STORAGE_KEY = 'checkboxStates';
 const PARAMS_STORAGE_KEY = 'parameters';
 const PARAM_TOKEN_REGEX = /(<[A-Z_0-9]+>|{{[A-Z_0-9]+}})/g;
@@ -185,8 +190,10 @@ function renderContent() {
     const html = marked.parse(contentWithValues);
     document.getElementById('contentArea').innerHTML = html;
     
-    addCopyButtonsToCodeBlocks();
+    enhanceCodeBlocks();
     highlightHashComments();
+    highlightParametersInText();
+    highlightParametersInCodeBlocks();
     makeCheckboxesInteractive();
     setupCodeBlockSelection();
 }
@@ -195,7 +202,7 @@ function applyParametersToContent(content) {
     let processedContent = content;
 
     Object.keys(parameters).forEach(param => {
-        const value = parameters[param] || `<${param}>`;
+        const value = getDisplayValueForParam(param);
         const regex1 = new RegExp(`<${param}>`, 'g');
         const regex2 = new RegExp(`{{${param}}}`, 'g');
         processedContent = processedContent.replace(regex1, value);
@@ -217,10 +224,11 @@ function extractCodeBlockParameters(content) {
     }
 }
 
-function addCopyButtonsToCodeBlocks() {
+function enhanceCodeBlocks() {
     const contentArea = document.getElementById('contentArea');
     const codeBlocks = contentArea.querySelectorAll('pre > code');
     let blockIndex = 0;
+    codeBlockWrappers = [];
 
     codeBlocks.forEach(codeBlock => {
         const pre = codeBlock.parentElement;
@@ -238,41 +246,113 @@ function addCopyButtonsToCodeBlocks() {
         pre.parentNode.insertBefore(wrapper, pre);
         wrapper.appendChild(pre);
 
-        const copyBtn = document.createElement('button');
-        copyBtn.type = 'button';
-        copyBtn.className = 'copy-btn';
-        copyBtn.setAttribute('aria-label', 'Copy code snippet');
-        copyBtn.textContent = '⧉';
-
-        copyBtn.addEventListener('click', async (event) => {
-            event.stopPropagation();
-            const originalText = copyBtn.textContent;
-            const rawText = codeBlock.innerText;
-            const isMarkdownSnippet = (codeBlock.className || '').includes('language-markdown');
-            const codeText = isMarkdownSnippet
-                ? rawText
-                : rawText
-                    .split('\n')
-                    .filter(line => !line.trimStart().startsWith('# '))
-                    .join('\n');
-
-            try {
-                await navigator.clipboard.writeText(codeText);
-                copyBtn.textContent = '✓';
-                copyBtn.classList.add('copied');
-            } catch (error) {
-                copyBtn.textContent = '!';
-                console.warn('Copy failed', error);
-            }
-
-            setTimeout(() => {
-                copyBtn.textContent = originalText;
-                copyBtn.classList.remove('copied');
-            }, 2000);
-        });
-
-        wrapper.appendChild(copyBtn);
+        addSelectionCopyBehavior(wrapper);
     });
+
+    attachSelectionCopyHandler();
+}
+
+function addSelectionCopyBehavior(wrapper) {
+    codeBlockWrappers.push(wrapper);
+}
+
+function attachSelectionCopyHandler() {
+    if (selectionCopyHandlerAttached) {
+        return;
+    }
+
+    const handleSelectionCopy = () => {
+        const selection = window.getSelection();
+        if (!selection || selection.isCollapsed) {
+            return;
+        }
+
+        const wrapper = findIntersectingWrapper(selection);
+        if (!wrapper) {
+            return;
+        }
+
+        const selectedText = selection.toString();
+        if (!selectedText.trim()) {
+            return;
+        }
+
+        const now = Date.now();
+        if (selectedText === lastCopiedSelection && wrapper === lastCopiedWrapper && (now - lastCopiedAt) < 200) {
+            return;
+        }
+
+        lastCopiedSelection = selectedText;
+        lastCopiedWrapper = wrapper;
+        lastCopiedAt = now;
+
+        navigator.clipboard.writeText(selectedText)
+            .then(() => showCopyFeedback(wrapper, 'Copied'))
+            .catch((error) => {
+                console.warn('Copy failed', error);
+                showCopyFeedback(wrapper, 'Copy failed');
+            });
+    };
+
+    ['mouseup', 'keyup', 'touchend'].forEach(eventName => {
+        document.addEventListener(eventName, handleSelectionCopy);
+    });
+
+    selectionCopyHandlerAttached = true;
+}
+
+function findIntersectingWrapper(selection) {
+    if (!selection.rangeCount) {
+        return null;
+    }
+
+    for (const wrapper of codeBlockWrappers) {
+        if (selectionIntersectsWrapper(selection, wrapper)) {
+            return wrapper;
+        }
+    }
+
+    return null;
+}
+
+function selectionIntersectsWrapper(selection, wrapper) {
+    for (let i = 0; i < selection.rangeCount; i++) {
+        const range = selection.getRangeAt(i);
+        if (typeof range.intersectsNode === 'function') {
+            if (range.intersectsNode(wrapper)) {
+                return true;
+            }
+        } else {
+            const wrapperRange = document.createRange();
+            wrapperRange.selectNodeContents(wrapper);
+            const startsBeforeEnd = range.compareBoundaryPoints(Range.END_TO_START, wrapperRange) < 0;
+            const endsAfterStart = range.compareBoundaryPoints(Range.START_TO_END, wrapperRange) > 0;
+            if (startsBeforeEnd && endsAfterStart) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function showCopyFeedback(wrapper, message) {
+    let badge = wrapper.querySelector('.copy-feedback');
+    if (!badge) {
+        badge = document.createElement('div');
+        badge.className = 'copy-feedback';
+        wrapper.appendChild(badge);
+    }
+
+    badge.textContent = message;
+    badge.classList.add('visible');
+
+    if (badge._timeoutId) {
+        clearTimeout(badge._timeoutId);
+    }
+
+    badge._timeoutId = setTimeout(() => {
+        badge.classList.remove('visible');
+    }, 1600);
 }
 
 function highlightHashComments() {
@@ -318,6 +398,169 @@ function highlightHashComments() {
             codeBlock.innerHTML = highlightedHtml;
         }
     });
+}
+
+function highlightParametersInCodeBlocks() {
+    const wrappers = document.querySelectorAll('.code-block');
+
+    wrappers.forEach(wrapper => {
+        const codeBlock = wrapper.querySelector('code');
+        if (!codeBlock) {
+            return;
+        }
+
+        const params = parseParamsFromDataset(wrapper.dataset.params);
+        const targets = collectParamTargets(codeBlock, params);
+        if (!targets.length) {
+            return;
+        }
+
+        wrapParamsInElement(codeBlock, targets, false);
+    });
+}
+
+function highlightParametersInText() {
+    const contentArea = document.getElementById('contentArea');
+    if (!contentArea) {
+        return;
+    }
+
+    const targets = collectParamTargets(contentArea, Object.keys(parameters));
+    if (!targets.length) {
+        return;
+    }
+
+    wrapParamsInElement(contentArea, targets, true);
+}
+
+function collectParamTargets(element, params = []) {
+    const targetSet = new Set();
+
+    (params || []).forEach(param => {
+        const value = getDisplayValueForParam(param);
+        if (value) {
+            targetSet.add(value);
+        }
+    });
+
+    const textContent = element.textContent || '';
+    const matches = textContent.match(PARAM_TOKEN_REGEX);
+    if (matches && matches.length) {
+        matches.forEach(token => targetSet.add(token));
+    }
+
+    return Array.from(targetSet).filter(Boolean);
+}
+
+function wrapParamsInElement(element, targets, skipCodeBlocks) {
+    const regex = buildParamRegex(targets);
+    if (!regex) {
+        return;
+    }
+
+    const walker = document.createTreeWalker(
+        element,
+        NodeFilter.SHOW_TEXT,
+        {
+            acceptNode(node) {
+                if (!node.nodeValue || !node.nodeValue.trim()) {
+                    return NodeFilter.FILTER_REJECT;
+                }
+
+                const parent = node.parentElement;
+                if (!parent) {
+                    return NodeFilter.FILTER_ACCEPT;
+                }
+
+                if (parent.closest('.param-token')) {
+                    return NodeFilter.FILTER_REJECT;
+                }
+
+                if (parent.closest('input, textarea, button, .params-panel')) {
+                    return NodeFilter.FILTER_REJECT;
+                }
+
+                if (skipCodeBlocks && parent.closest('.code-block')) {
+                    return NodeFilter.FILTER_REJECT;
+                }
+
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        }
+    );
+
+    // FIX: Collect all nodes first to prevent TreeWalker index corruption
+    // when nodes are replaced during the loop.
+    const textNodes = [];
+    let textNode;
+    while ((textNode = walker.nextNode())) {
+        textNodes.push(textNode);
+    }
+
+    // Process the collected nodes safely
+    textNodes.forEach(node => {
+        wrapMatchesInTextNode(node, regex, new Set(targets));
+    });
+}
+
+function wrapMatchesInTextNode(node, regex, targetSet) {
+    const text = node.nodeValue;
+    regex.lastIndex = 0;
+
+    const matches = Array.from(text.matchAll(regex));
+    if (!matches.length) {
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    let lastIndex = 0;
+
+    matches.forEach(match => {
+        const start = match.index || 0;
+        const value = match[0];
+
+        if (start > lastIndex) {
+            fragment.appendChild(document.createTextNode(text.slice(lastIndex, start)));
+        }
+
+        const span = document.createElement('span');
+        span.className = 'param-token';
+        span.textContent = value;
+        fragment.appendChild(span);
+
+        lastIndex = start + value.length;
+    });
+
+    if (lastIndex < text.length) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+
+    node.parentNode.replaceChild(fragment, node);
+}
+
+function buildParamRegex(targets) {
+    const escaped = targets
+        .filter(Boolean)
+        .map(value => escapeRegex(value))
+        .sort((a, b) => b.length - a.length);
+
+    if (!escaped.length) {
+        return null;
+    }
+
+    return new RegExp(`(${escaped.join('|')})`, 'g');
+}
+
+function escapeRegex(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function getDisplayValueForParam(param) {
+    const value = parameters[param];
+    if (value === undefined || value === null || `${value}` === '') {
+        return `<${param}>`;
+    }
+    return `${value}`;
 }
 
 function setupCodeBlockSelection() {
