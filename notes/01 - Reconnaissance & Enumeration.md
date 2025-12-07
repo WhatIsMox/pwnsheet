@@ -1925,43 +1925,33 @@ Get-ChildItem -Path "\\<HOSTNAME>\<SHARE>" -Recurse -Include *.txt,*.xml,*.confi
 ---
 
 ### 17.5 BloodHound / SharpHound
+[Quick Start BloodHound CE](https://bloodhound.specterops.io/get-started/quickstart/community-edition-quickstart)
 
 #### Linux - BloodHound Python
 ```bash
 # All collection
-bloodhound-python -c All -u '<USER>' -p '<PASS>' -d <DOMAIN> -dc <DC_HOSTNAME> -ns <DC_IP>
-
+bloodhound-python -c All -u '' -p '' -d  -dc  -ns 
 # DC only (faster)
-bloodhound-python -c DCOnly -u '<USER>' -p '<PASS>' -d <DOMAIN> -dc <DC_HOSTNAME> -ns <DC_IP>
-
+bloodhound-python -c DCOnly -u '' -p '' -d  -dc  -ns 
 # Specific collections
-bloodhound-python -c Group,LocalAdmin,Session,Trusts -u '<USER>' -p '<PASS>' -d <DOMAIN> -ns <DC_IP>
-
-# Start BloodHound
-sudo neo4j console
-bloodhound
+bloodhound-python -c Group,LocalAdmin,Session,Trusts -u '' -p '' -d  -ns 
 ```
 
 #### Windows - SharpHound
 ```powershell
-# Standard collection
-.\SharpHound.exe -c All
-
+# Standard collection (JSON output for CE)
+.\SharpHound.exe -c All --outputdirectory C:\Temp
 # Fast collection (no session enumeration)
 .\SharpHound.exe -c DCOnly
-
 # Specific collection methods
 .\SharpHound.exe -c Session,LoggedOn
 .\SharpHound.exe -c Group,LocalAdmin,Trusts
-
 # Loop collection (for sessions)
 .\SharpHound.exe -c All --Loop --Loopduration 02:00:00
-
 # Stealth collection
 .\SharpHound.exe -c All --Stealth
-
-# Output to specific directory
-.\SharpHound.exe -c All -d <DOMAIN> --OutputDirectory C:\Temp
+# Domain specification
+.\SharpHound.exe -c All -d  --outputdirectory C:\Temp
 ```
 
 
