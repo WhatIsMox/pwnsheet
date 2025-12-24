@@ -1751,6 +1751,7 @@ hydra -s 5900 -P /usr/share/wordlists/rockyou.txt vnc://<RHOST>
 ```
 
 ---
+## 17 Active Directory Enumeration
 
 ### 17.1 Domain Enumeration
 
