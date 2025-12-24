@@ -16,19 +16,19 @@
             <h1 class="header-title">Pwnsheet</h1>
             <div class="header-actions">
                 <div class="header-tool-group">
-                    <button class="header-icon-btn" id="fileTransferBtn" type="button" aria-label="Open file transfer commands">
+                    <button class="header-icon-btn" id="fileTransferBtn" type="button" aria-label="Open file transfer commands" title="File transfer helper">
                         <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
                     </button>
-                    <button class="header-icon-btn" id="reverseShellBtn" type="button" aria-label="Open reverse shell generator">
+                    <button class="header-icon-btn" id="reverseShellBtn" type="button" aria-label="Open reverse shell generator" title="Shells helper">
                         <i class="bi bi-terminal" aria-hidden="true"></i>
                     </button>
-                    <button class="header-icon-btn" id="toolsBtn" type="button" aria-label="Open pentest tools list">
+                    <button class="header-icon-btn" id="toolsBtn" type="button" aria-label="Open pentest tools list" title="Tools & wordlists">
                         <i class="bi bi-tools" aria-hidden="true"></i>
                     </button>
                 </div>
                 <div class="download-group">
-                    <button class="header-icon-btn download-kit-btn" id="downloadKitBtn" type="button" aria-label="Download pentest notes skeleton">
-                        <i class="bi bi-download" aria-hidden="true"></i>
+                    <button class="header-icon-btn download-kit-btn" id="downloadKitBtn" type="button" aria-label="Download pentest notes skeleton" title="Download notes skeleton">
+                        <i class="bi bi-journal-arrow-down" aria-hidden="true"></i>
                         <span class="sr-only">Notes Skeleton</span>
                     </button>
                     <div class="skeleton-menu" id="skeletonMenu" role="menu">
@@ -37,8 +37,8 @@
                         <button class="skeleton-option" data-template="oscp">OSCP</button>
                     </div>
                 </div>
-                <button class="new-assessment-btn" id="newAssessmentBtn" aria-label="Reset Playbook">
-                    <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                <button class="new-assessment-btn" id="newAssessmentBtn" aria-label="Reset Playbook" title="Reset playbook to defaults" hidden>
+                    <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
                     <span class="reset-label">Reset</span>
                 </button>
             </div>
@@ -85,6 +85,62 @@
     </div>
 </footer>
 
+<div class="pwn-modal" id="initialParamsModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="pwn-modal-backdrop" data-close-modal></div>
+    <div class="pwn-modal-card initial-params-card" role="document">
+        <div class="pwn-modal-header">
+            <div>
+                <p class="pwn-modal-eyebrow">Quick setup</p>
+                <h2>Core Targets</h2>
+                <p class="pwn-modal-subtitle">LHOST is your attacker/listener address. RHOST is the remote host or service you are assessing.</p>
+            </div>
+            <button class="pwn-modal-close" type="button" data-close-modal aria-label="Close initial parameters modal">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="pwn-modal-body">
+            <p class="modal-helper-text">We prefill every parameter as empty. Set these now or skip and fill them from the Dynamic Parameters panel later.</p>
+            <div class="modal-field-grid">
+                <label class="modal-field">
+                    <span>LHOST</span>
+                    <input type="text" id="initialLhost" placeholder="Attacker callback IP (10.10.14.8)" autocomplete="off">
+                </label>
+                <label class="modal-field">
+                    <span>RHOST</span>
+                    <input type="text" id="initialRhost" placeholder="Target IP or hostname" autocomplete="off">
+                </label>
+            </div>
+            <div class="modal-actions">
+                <button class="ghost-btn" type="button" id="initialParamsSkip">Skip for now</button>
+                <button class="primary-btn" type="button" id="initialParamsSave">Save &amp; continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pwn-modal" id="resetConfirmModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="pwn-modal-backdrop" data-close-modal></div>
+    <div class="pwn-modal-card" role="document">
+        <div class="pwn-modal-header">
+            <div>
+                <p class="pwn-modal-eyebrow">Reset</p>
+                <h2>Reset playbook?</h2>
+                <p class="pwn-modal-subtitle">This clears all dynamic parameters and checklist progress.</p>
+            </div>
+            <button class="pwn-modal-close" type="button" data-close-modal aria-label="Close reset confirmation modal">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="pwn-modal-body">
+            <p class="modal-helper-text">You can’t undo this action. Any stored values or completed checkboxes will be removed.</p>
+            <div class="modal-actions">
+                <button class="ghost-btn" type="button" id="resetCancelBtn" data-close-modal>Keep my data</button>
+                <button class="primary-btn" type="button" id="resetConfirmBtn">Reset everything</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="pwn-modal" id="fileTransferModal" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="pwn-modal-backdrop" data-close-modal></div>
     <div class="pwn-modal-card transfer-modal-card" role="document">
@@ -98,73 +154,106 @@
             </button>
         </div>
         <div class="pwn-modal-body">
-            <div class="transfer-layout">
-                <div class="transfer-inputs">
-                    <div class="modal-field-grid transfer-select-row">
-                        <label class="modal-field">
-                            <span>From OS</span>
-                            <select id="transferFrom">
-                                <option value="linux">Linux</option>
-                                <option value="windows">Windows</option>
-                                <option value="macos">macOS</option>
-                            </select>
-                        </label>
-                        <button class="swap-btn" id="transferSwapBtn" type="button" aria-label="Swap source and destination OS">
-                            <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
-                        </button>
-                        <label class="modal-field">
-                            <span>To OS</span>
-                            <select id="transferTo">
-                                <option value="windows">Windows</option>
-                                <option value="linux">Linux</option>
-                                <option value="macos">macOS</option>
-                            </select>
-                        </label>
-                    </div>
-                    <div class="modal-field-grid">
-                        <label class="modal-field">
-                            <span>LHOST</span>
-                            <input type="text" id="transferLhost" placeholder="10.10.14.8" autocomplete="off">
-                        </label>
-                        <label class="modal-field">
-                            <span>LPORT</span>
-                            <input type="text" id="transferLport" inputmode="numeric" placeholder="8000" autocomplete="off">
-                        </label>
-                        <label class="modal-field">
-                            <span>Filename</span>
-                            <input type="text" id="transferFilename" placeholder="payload.bin" autocomplete="off">
-                        </label>
+            <div class="modal-section">
+                <div class="section-header">
+                    <div>
+                        <p class="section-kicker">Setup</p>
+                        <h3 class="section-title">Source &amp; destination</h3>
+                        <p class="section-description">Pick OS pairs and prefill values to animate the helper.</p>
                     </div>
                 </div>
-                <div class="transfer-visual transfer-animate" id="transferVisual">
-                    <div class="transfer-node">
-                        <div class="transfer-icon">
-                            <i class="bi bi-terminal" id="transferFromIcon" aria-hidden="true"></i>
+                <div class="section-body">
+                    <div class="transfer-layout">
+                        <div class="transfer-inputs">
+                            <div class="modal-field-grid transfer-select-row">
+                                <label class="modal-field">
+                                    <span>From OS</span>
+                                    <select id="transferFrom">
+                                        <option value="linux">Linux</option>
+                                        <option value="windows">Windows</option>
+                                        <option value="macos">macOS</option>
+                                    </select>
+                                </label>
+                                <button class="swap-btn" id="transferSwapBtn" type="button" aria-label="Swap source and destination OS">
+                                    <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
+                                </button>
+                                <label class="modal-field">
+                                    <span>To OS</span>
+                                    <select id="transferTo">
+                                        <option value="windows">Windows</option>
+                                        <option value="linux">Linux</option>
+                                        <option value="macos">macOS</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="modal-field-grid">
+                                <label class="modal-field">
+                                    <span>Sender IP</span>
+                                    <input type="text" id="transferSenderIp" placeholder="e.g., 10.10.14.8" autocomplete="off">
+                                </label>
+                                <label class="modal-field">
+                                    <span>Sender Port</span>
+                                    <input type="text" id="transferSenderPort" inputmode="numeric" placeholder="e.g., 8080" autocomplete="off">
+                                </label>
+                                <label class="modal-field">
+                                    <span>Receiver IP</span>
+                                    <input type="text" id="transferReceiverIp" placeholder="e.g., 10.10.11.5" autocomplete="off">
+                                </label>
+                                <label class="modal-field">
+                                    <span>Sender User</span>
+                                    <input type="text" id="transferSenderUser" placeholder="Optional (e.g., kali)" autocomplete="off">
+                                </label>
+                                <label class="modal-field">
+                                    <span>Filename</span>
+                                    <input type="text" id="transferFilename" placeholder="e.g., payload.bin" autocomplete="off">
+                                </label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="transfer-bridge" aria-hidden="true">
-                        <span class="transfer-line">
-                            <span class="transfer-file"></span>
-                        </span>
-                    </div>
-                    <div class="transfer-node">
-                        <div class="transfer-icon">
-                            <i class="bi bi-windows" id="transferToIcon" aria-hidden="true"></i>
+                        <div class="transfer-visual transfer-animate" id="transferVisual">
+                            <div class="transfer-node">
+                                <div class="transfer-icon">
+                                    <i class="bi bi-terminal" id="transferFromIcon" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                            <div class="transfer-bridge" aria-hidden="true">
+                                <span class="transfer-line">
+                                    <span class="transfer-file"></span>
+                                </span>
+                            </div>
+                            <div class="transfer-node">
+                                <div class="transfer-icon">
+                                    <i class="bi bi-windows" id="transferToIcon" aria-hidden="true"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="transfer-table-wrap" data-copy-zone>
-                <table class="transfer-table">
-                    <thead>
-                        <tr>
-                            <th>Protocol</th>
-                            <th>Attacker Command</th>
-                            <th>Victim Command</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transferTableBody"></tbody>
-                </table>
+            <div class="modal-section">
+                <div class="section-header">
+                    <div>
+                        <p class="section-kicker">Recipes</p>
+                        <h3 class="section-title">Protocol cheatsheet</h3>
+                        <p class="section-description">Commands adapt to your OS picks and placeholder values.</p>
+                    </div>
+                </div>
+                        <div class="transfer-table-wrap" data-copy-zone>
+                            <table class="transfer-table data-table">
+                                <colgroup>
+                                    <col>
+                                    <col>
+                                    <col>
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>Protocol</th>
+                                        <th>Attacker Command</th>
+                                        <th>Victim Command</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transferTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -175,79 +264,111 @@
     <div class="pwn-modal-card" role="document">
         <div class="pwn-modal-header">
             <div>
-                <p class="pwn-modal-eyebrow">Reverse Shell</p>
-                <h2>Generate Listener + Payload</h2>
+                <p class="pwn-modal-eyebrow">Remote Code Execution</p>
+                <h2>Shells Helper</h2>
             </div>
             <button class="pwn-modal-close" type="button" data-close-modal aria-label="Close reverse shell modal">
                 <i class="bi bi-x-lg" aria-hidden="true"></i>
             </button>
         </div>
         <div class="pwn-modal-body">
-            <div class="modal-field-grid">
-                <label class="modal-field">
-                    <span>LHOST</span>
-                    <input type="text" id="reverseLhost" placeholder="10.10.14.8" autocomplete="off">
-                    <span class="field-error" id="reverseLhostError"></span>
-                </label>
-                <label class="modal-field">
-                    <span>LPORT</span>
-                    <input type="text" id="reverseLport" inputmode="numeric" placeholder="4444" autocomplete="off">
-                    <span class="field-error" id="reverseLportError"></span>
-                </label>
-            </div>
-            <div class="modal-tabs" data-tab-group="reverse-shell">
-                <button class="modal-tab-btn active" type="button" data-tab-target="reverse-generic">Generic</button>
-                <button class="modal-tab-btn" type="button" data-tab-target="reverse-msfvenom">MSFvenom</button>
-            </div>
-            <div class="tab-panel active" data-tab-panel="reverse-generic">
-                <div class="modal-field-grid single">
-                    <label class="modal-field">
-                        <span>Shell Type</span>
-                        <select id="reverseType"></select>
-                    </label>
-                </div>
-                <div class="reverse-shell-grid">
-                <div class="reverse-shell-card reverse-shell-victim" data-copy-zone>
-                    <div class="reverse-shell-heading">
-                        <h3>Victim Command</h3>
+            <div class="modal-section">
+                <div class="section-header">
+                    <div>
+                        <p class="section-kicker">Connection</p>
+                        <h3 class="section-title">Targets &amp; listeners</h3>
+                        <p class="section-description">Populate once and reuse the same values across every helper tab.</p>
                     </div>
-                    <pre><code id="reverseVictimCmd"></code></pre>
+                    <span class="section-pill">
+                        <i class="bi bi-broadcast-pin" aria-hidden="true"></i>
+                        Parameter aware
+                    </span>
                 </div>
-                <div class="reverse-shell-card reverse-shell-attacker" data-copy-zone>
-                    <div class="reverse-shell-heading">
-                        <h3>Attacker Command</h3>
-                    </div>
-                    <pre><code id="reverseAttackerCmd"></code></pre>
-                </div>
-                </div>
-            </div>
-            <div class="tab-panel" data-tab-panel="reverse-msfvenom">
-                <div class="msfvenom-section">
-                    <div class="msfvenom-header">
-                        <h3>MSFvenom Payload Generator</h3>
-                        <p>Build a payload and matching handler command.</p>
-                    </div>
-                    <div class="modal-field-grid msfvenom-grid">
+                <div class="section-body">
+                    <div class="modal-field-grid">
                         <label class="modal-field">
-                            <span>Payload</span>
-                            <select id="msfvenomPayload"></select>
+                            <span>LHOST</span>
+                            <input type="text" id="reverseLhost" placeholder="e.g., 10.10.14.8" autocomplete="off">
+                            <span class="field-error" id="reverseLhostError"></span>
                         </label>
                         <label class="modal-field">
-                            <span>Output File Name</span>
-                            <input type="text" id="msfvenomOutput" placeholder="payload" autocomplete="off">
+                            <span>LPORT</span>
+                            <input type="text" id="reverseLport" inputmode="numeric" placeholder="e.g., 4444" autocomplete="off">
+                            <span class="field-error" id="reverseLportError"></span>
                         </label>
                     </div>
-                    <div class="reverse-shell-card msfvenom-card" data-copy-zone>
-                        <div class="reverse-shell-heading">
-                            <h3>msfvenom Command</h3>
-                        </div>
-                        <pre><code id="msfvenomCmd"></code></pre>
+                </div>
+            </div>
+            <div class="modal-section">
+                <div class="section-header">
+                    <div>
+                        <p class="section-kicker">Recipes</p>
+                        <h3 class="section-title">Shells helper</h3>
+                        <p class="section-description">Switch tabs for payloads, upload bypasses, webshells, and stabilisation.</p>
                     </div>
-                    <div class="reverse-shell-card msfvenom-card" data-copy-zone>
-                        <div class="reverse-shell-heading">
-                            <h3>Listener Command</h3>
+                </div>
+                <div class="section-body">
+                    <div class="modal-tabs" data-tab-group="reverse-shell">
+                        <button class="modal-tab-btn active" type="button" data-tab-target="reverse-generic">Reverse Shells</button>
+                        <button class="modal-tab-btn" type="button" data-tab-target="reverse-msfvenom">MSFvenom</button>
+                        <button class="modal-tab-btn" type="button" data-tab-target="reverse-webshells">Webshells</button>
+                        <button class="modal-tab-btn" type="button" data-tab-target="reverse-upload">Upload Bypass</button>
+                        <button class="modal-tab-btn" type="button" data-tab-target="reverse-stab">Stabilisation</button>
+                    </div>
+                    <div class="tab-panel active" data-tab-panel="reverse-generic">
+                        <div class="modal-field-grid single field-stack">
+                            <label class="modal-field">
+                                <span>Shell Type</span>
+                                <select id="reverseType"></select>
+                            </label>
                         </div>
-                        <pre><code id="msfvenomListenerCmd"></code></pre>
+                        <div id="reverseCombinedCmd" class="snippet-stack"></div>
+                    </div>
+                    <div class="tab-panel" data-tab-panel="reverse-msfvenom">
+                        <div class="msfvenom-section">
+                            <div class="msfvenom-header">
+                                <h3>MSFvenom Payload Generator</h3>
+                                <p>Build a payload and matching handler command.</p>
+                            </div>
+                            <div class="modal-field-grid msfvenom-grid">
+                                <label class="modal-field">
+                                    <span>Payload</span>
+                                    <select id="msfvenomPayload"></select>
+                                </label>
+                                <label class="modal-field">
+                                    <span>Output File Name</span>
+                                    <input type="text" id="msfvenomOutput" placeholder="payload" autocomplete="off">
+                                </label>
+                            </div>
+                            <div id="msfvenomCombinedCmd" class="snippet-stack"></div>
+                        </div>
+                    </div>
+                    <div class="tab-panel" data-tab-panel="reverse-webshells">
+                        <div class="modal-field-grid single field-stack">
+                            <label class="modal-field">
+                                <span>Webshell Type</span>
+                                <select id="reverseWebType"></select>
+                            </label>
+                        </div>
+                        <div id="reverseWebshellCmd" class="snippet-stack reference-content"></div>
+                    </div>
+                    <div class="tab-panel" data-tab-panel="reverse-upload">
+                        <div class="reference-card" data-copy-zone>
+                            <div class="reverse-shell-heading">
+                                <h3>Upload Bypass</h3>
+                                <span>Extension tricks, content-types and magic numbers.</span>
+                            </div>
+                            <div class="reference-content" id="reverseUploadContent"></div>
+                        </div>
+                    </div>
+                    <div class="tab-panel" data-tab-panel="reverse-stab">
+                        <div class="reference-card" data-copy-zone>
+                            <div class="reverse-shell-heading">
+                                <h3>Shell Stabilisation</h3>
+                                <span>Post-exploitation shell hardening steps.</span>
+                            </div>
+                            <div class="reference-content" id="reverseStabContent"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -268,134 +389,63 @@
             </button>
         </div>
         <div class="pwn-modal-body">
-            <div class="modal-tabs" data-tab-group="tools">
-                <button class="modal-tab-btn active" type="button" data-tab-target="tools-list">Tools</button>
-                <button class="modal-tab-btn" type="button" data-tab-target="wordlists-list">Wordlists</button>
-            </div>
-            <div class="tab-panel active" data-tab-panel="tools-list">
-                <div class="tools-controls">
-                    <label class="modal-field tools-search">
-                        <span>Search Tools</span>
-                        <input type="text" id="toolsSearch" placeholder="Search by tool or category" autocomplete="off">
-                    </label>
-                    <div class="tools-sort">
-                        <span class="tools-sort-label">Order by</span>
-                        <button class="tools-sort-btn" type="button" data-sort-group="tools" data-sort-key="name">Tool Name</button>
-                        <button class="tools-sort-btn" type="button" data-sort-group="tools" data-sort-key="category">Category</button>
+            <div class="modal-section">
+                <div class="section-header">
+                    <div>
+                        <p class="section-kicker">Reference</p>
+                        <h3 class="section-title">Toolbox</h3>
+                        <p class="section-description">Search, sort, and copy install snippets or wordlists without leaving the playbook.</p>
                     </div>
+                    <span class="section-pill">
+                        <i class="bi bi-funnel" aria-hidden="true"></i>
+                        Filterable lists
+                    </span>
                 </div>
-                <div class="modal-table-wrap">
-                    <table class="modal-table" id="toolsTable">
-                        <thead>
-                            <tr>
-                                <th>Tool Name</th>
-                                <th>Category</th>
-                                <th>Executable</th>
-                                <th>Link</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>BloodHound</td>
-                                <td>Active Directory</td>
-                                <td>No</td>
-                                <td><a href="https://github.com/BloodHoundAD/BloodHound" target="_blank" rel="noopener noreferrer">GitHub</a></td>
-                            </tr>
-                            <tr>
-                                <td>Impacket</td>
-                                <td>Active Directory</td>
-                                <td>No</td>
-                                <td><a href="https://github.com/fortra/impacket" target="_blank" rel="noopener noreferrer">GitHub</a></td>
-                            </tr>
-                            <tr>
-                                <td>CrackMapExec</td>
-                                <td>SMB</td>
-                                <td>No</td>
-                                <td><a href="https://github.com/byt3bl33d3r/CrackMapExec" target="_blank" rel="noopener noreferrer">GitHub</a></td>
-                            </tr>
-                            <tr>
-                                <td>Responder</td>
-                                <td>Poisoning</td>
-                                <td>No</td>
-                                <td><a href="https://github.com/SpiderLabs/Responder" target="_blank" rel="noopener noreferrer">GitHub</a></td>
-                            </tr>
-                            <tr>
-                                <td>Nmap</td>
-                                <td>Reconnaissance</td>
-                                <td>Yes</td>
-                                <td><a href="https://nmap.org" target="_blank" rel="noopener noreferrer">Website</a></td>
-                            </tr>
-                            <tr>
-                                <td>Metasploit</td>
-                                <td>Exploitation</td>
-                                <td>No</td>
-                                <td><a href="https://github.com/rapid7/metasploit-framework" target="_blank" rel="noopener noreferrer">GitHub</a></td>
-                            </tr>
-                            <tr>
-                                <td>linPEAS/winPEAS</td>
-                                <td>Privilege Escalation</td>
-                                <td>Yes</td>
-                                <td><a href="https://github.com/carlospolop/PEASS-ng" target="_blank" rel="noopener noreferrer">GitHub</a></td>
-                            </tr>
-                            <tr>
-                                <td>Burp Suite</td>
-                                <td>Web Testing</td>
-                                <td>Yes</td>
-                                <td><a href="https://portswigger.net/burp" target="_blank" rel="noopener noreferrer">Website</a></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="tab-panel" data-tab-panel="wordlists-list">
-                <div class="tools-controls">
-                    <label class="modal-field tools-search">
-                        <span>Search Wordlists</span>
-                        <input type="text" id="wordlistsSearch" placeholder="Search by wordlist or category" autocomplete="off">
-                    </label>
-                    <div class="tools-sort">
-                        <span class="tools-sort-label">Order by</span>
-                        <button class="tools-sort-btn" type="button" data-sort-group="wordlists" data-sort-key="name">Wordlist</button>
-                        <button class="tools-sort-btn" type="button" data-sort-group="wordlists" data-sort-key="category">Category</button>
+                <div class="section-body">
+                    <div class="modal-tabs" data-tab-group="tools">
+                        <button class="modal-tab-btn active" type="button" data-tab-target="tools-list">Tools</button>
+                        <button class="modal-tab-btn" type="button" data-tab-target="wordlists-list">Wordlists</button>
                     </div>
-                </div>
-                <div class="modal-table-wrap" data-copy-zone>
-                    <table class="modal-table" id="wordlistsTable">
-                        <thead>
-                            <tr>
-                                <th>Wordlist</th>
-                                <th>Category</th>
-                                <th>Command</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>SecLists - Common.txt</td>
-                                <td>Web Content</td>
-                                <td><code>wget https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt -O common.txt</code></td>
-                            </tr>
-                            <tr>
-                                <td>SecLists - DNS Subdomains</td>
-                                <td>DNS</td>
-                                <td><code>wget https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/DNS/subdomains-top1million-20000.txt -O subdomains.txt</code></td>
-                            </tr>
-                            <tr>
-                                <td>SecLists - Usernames</td>
-                                <td>Credentials</td>
-                                <td><code>wget https://raw.githubusercontent.com/danielmiessler/SecLists/master/Usernames/xato-net-10-million-usernames.txt -O usernames.txt</code></td>
-                            </tr>
-                            <tr>
-                                <td>SecLists - Passwords</td>
-                                <td>Credentials</td>
-                                <td><code>wget https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10k-most-common.txt -O passwords.txt</code></td>
-                            </tr>
-                            <tr>
-                                <td>FuzzDB - Discovery</td>
-                                <td>Fuzzing</td>
-                                <td><code>wget https://raw.githubusercontent.com/fuzzdb-project/fuzzdb/master/discovery/predictable-filepaths/filename-dirname-bruteforce/raft-large-files.txt -O raft-files.txt</code></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="tab-panel active" data-tab-panel="tools-list">
+                        <div class="tools-controls">
+                            <label class="modal-field tools-search">
+                                <span>Search Tools</span>
+                                <input type="text" id="toolsSearch" placeholder="Search by tool or category" autocomplete="off">
+                            </label>
+                        </div>
+                        <div class="modal-table-wrap">
+                            <table class="modal-table data-table" id="toolsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Tool Name <button class="header-sort-btn" type="button" data-sort-group="tools" data-sort-key="name"><i class="bi bi-chevron-expand" aria-hidden="true"></i><span class="sr-only">Sort by tool name</span></button></th>
+                                        <th>Category <button class="header-sort-btn" type="button" data-sort-group="tools" data-sort-key="category"><i class="bi bi-chevron-expand" aria-hidden="true"></i><span class="sr-only">Sort by category</span></button></th>
+                                        <th>Setup <button class="header-sort-btn" type="button" data-sort-group="tools" data-sort-key="installation"><i class="bi bi-chevron-expand" aria-hidden="true"></i><span class="sr-only">Sort by setup</span></button></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-panel" data-tab-panel="wordlists-list">
+                        <div class="tools-controls">
+                            <label class="modal-field tools-search">
+                                <span>Search Wordlists</span>
+                                <input type="text" id="wordlistsSearch" placeholder="Search by wordlist or category" autocomplete="off">
+                            </label>
+                        </div>
+                        <div class="modal-table-wrap" data-copy-zone>
+                            <table class="modal-table data-table" id="wordlistsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Wordlist <button class="header-sort-btn" type="button" data-sort-group="wordlists" data-sort-key="name"><i class="bi bi-chevron-expand" aria-hidden="true"></i><span class="sr-only">Sort by wordlist</span></button></th>
+                                        <th>Category <button class="header-sort-btn" type="button" data-sort-group="wordlists" data-sort-key="category"><i class="bi bi-chevron-expand" aria-hidden="true"></i><span class="sr-only">Sort by category</span></button></th>
+                                        <th>Download <button class="header-sort-btn" type="button" data-sort-group="wordlists" data-sort-key="command"><i class="bi bi-chevron-expand" aria-hidden="true"></i><span class="sr-only">Sort by download</span></button></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -406,6 +456,11 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="script.js"></script>
+<script src="scripts/constants.js?v=2"></script>
+<script src="scripts/utils.js?v=2"></script>
+<script src="scripts/copy.js?v=2"></script>
+<script src="scripts/modals.js?v=2"></script>
+<script src="scripts/content.js?v=2"></script>
+<script src="scripts/main.js?v=2"></script>
 </body>
 </html>

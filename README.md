@@ -17,14 +17,17 @@ A smart, interactive cheatsheet designed to streamline penetration testing asses
 
 ## ✨ Key Features
 
-- **📋 Phase-Based Workflow** - Structured assessment phases from reconnaissance through lateral movement
-- **🎯 Dynamic Parameters** - Click any code block to filter relevant parameters; auto-populate commands across the entire phase
+Everything follows an interactive, dynamic approach—helpers react to your inputs and keep commands in sync.
+
+- **📋 Phase-Based Workflow** - Cheatsheet for all pentesting phases from reconnaissance to lateral movement
+- **🎯 Dynamic Parameters** - Click any code block to filter relevant parameters; auto-populate commands across the assessment
 - **✅ Progress Tracking** - Interactive checkboxes with persistent state to track your assessment progress
 - **📦 Zero Dependencies** - Pure HTML/CSS/JS with no build process; runs entirely in the browser
 - **💾 Local Storage** - All progress and parameters saved locally; nothing leaves your machine
 - **🎨 Modern UI** - Clean, responsive interface optimized for security professionals
-- **📱 Mobile Friendly** - Fully responsive design works on tablets and mobile devices
-- **⌨️ Keyboard Shortcuts** - `Ctrl/Cmd + R` to reset, quick navigation between phases
+- **🚚 File Transfer Helper** - Generates sender/receiver commands for faster file moves across hosts
+- **🐚 Shells Helper** - Reverse shell oneliners, web shells, and stabilization commands on demand
+- **🧰 Tools & Wordlists Table** - Quick download/install commands for common tools and wordlists
 
 ## 🚀 Quick Start
 
@@ -81,17 +84,21 @@ Example workflow:
 ```
 pwnsheet/
 ├── index.html          # Main application shell
-├── script.js           # Core functionality and state management
+├── scripts             # Core functionality split by concern
+│   ├── constants.js    # Shared state, regexes, templates
+│   ├── utils.js        # Marked setup + style helpers
+│   ├── copy.js         # Copy/selection feedback utilities
+│   ├── modals.js       # Modal logic, generators, tables
+│   ├── content.js      # Markdown rendering + parameter wiring
+│   └── main.js         # Entry point + global event wiring
 ├── styles.css          # UI styling and theme
 ├── README.md           # This file
-└── notes               # 01-07 markdown assessment phases
+└── notes               # 01-04 markdown notes
     ├── 01 - Reconnaissance & Enumeration.md
-    ├── 02 - Vulnerability Assessment & Web Testing.md
-    ├── 03 - Exploitation (Infrastructure & Web).md
-    ├── 04 - Post Exploitation & Privilege Escalation.md
+    ├── 02 - Vulnerability Research & Exploitation.md
+    ├── 03 - Post Exploitation & Privilege Escalation.md
+    ├── 04 - Lateral Movement.md
     ├── 05 - Active Directory Exploitation.md
-    ├── 06 - Lateral Movement.md
-    └── 07 - Pivoting with Ligolo-ng & Tunneling Strategy.md
 ```
 
 ## 🤝 Contributing
