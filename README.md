@@ -92,7 +92,7 @@ pwnsheet/
 │   └── main.js         # Entry point + global event wiring
 ├── styles.css          # UI styling and theme
 ├── README.md           # This file
-└── notes               # 01-04 markdown notes
+└── notes               # markdown notes
     ├── 01 - Reconnaissance & Enumeration.md
     ├── 02 - Vulnerability Research & Exploitation.md
     ├── 03 - Post Exploitation & Privilege Escalation.md
