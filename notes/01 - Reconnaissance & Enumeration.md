@@ -51,8 +51,9 @@ Build a complete, repeatable picture of each target: live hosts, open ports, ser
 - [ ] Fingerprint web stack → [4.1](#41-initial-fingerprinting)
 - [ ] Find dirs/endpoints → [4.2](#42-directory-and-endpoint-discovery)
 - [ ] Check special files/backups → [4.3](#43-special-files-and-backups)
-- [ ] Identify CMS + targeted scan → [4.4](#44-cms-scanning)
-- [ ] Web vuln scan + validate → [4.5](#45-web-vulnerability-scanning)
+- [ ] Downloaded file & artifact triage → [4.4](#44-downloaded-file--artifact-triage)
+- [ ] Identify CMS + targeted scan → [4.5](#45-cms-scanning)
+- [ ] Web vuln scan + validate → [4.6](#46-web-vulnerability-scanning)
 
 ### SMB/NetBIOS Enumeration
 
@@ -663,24 +664,24 @@ feroxbuster -u <HTTP_PROTOCOL>://<RHOST>:<RPORT>/ \
 # Basic directory fuzzing
 ffuf -w /usr/share/wordlists/dirb/common.txt \
   -u <HTTP_PROTOCOL>://<RHOST>:<RPORT>/FUZZ \
-  -mc 200,204,301,302,307,401 -o ffuf_dirs_<RHOST>_<RPORT>.txt
+  -mc 200,204,301,302,307,401 -o ffuf_dirs_<RHOST>_<RPORT>.txt -ac
 
 # Basic directory fuzzing with extensions
 ffuf -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-small.txt \
   -u <HTTP_PROTOCOL>://<RHOST>:<RPORT>/FUZZ \
-  -e .php,.html,.txt,.bak,.zip,.log
+  -e .php,.html,.txt,.bak,.zip,.log -ac
 
 # Recursive scanning
 ffuf -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-small.txt \
-  -u <HTTP_PROTOCOL>://<RHOST>:<RPORT>/FUZZ -recursion
+  -u <HTTP_PROTOCOL>://<RHOST>:<RPORT>/FUZZ -recursion -ac
 
 # VHost fuzzing
 ffuf -c -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt \
-  -u <HTTP_PROTOCOL>://<RHOST>:<RPORT>/ -H "Host: FUZZ.<DOMAIN>" -fs <BASE_SIZE>
+  -u <HTTP_PROTOCOL>://<RHOST>:<RPORT>/ -H "Host: FUZZ.<DOMAIN>" -fs <BASE_SIZE> -ac
 
 # Parameter fuzzing
 ffuf -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt \
-  -u <HTTP_PROTOCOL>://<RHOST>/page?FUZZ=test -mc 200
+  -u <HTTP_PROTOCOL>://<RHOST>/page?FUZZ=test -mc 200 -ac
 ```
 
 **Dirsearch:**
@@ -734,7 +735,182 @@ git show HEAD
 done
 ```
 
-### 4.4 CMS scanning
+### 4.4 Downloaded File & Artifact Triage
+
+Whenever you download files from **SMB/NFS/FTP/HTTP**, treat them like a mini forensic exercise: identify what the file *really* is, extract metadata, pull out human-readable content, then unpack containers and scan what falls out. This often reveals credentials, internal hostnames, paths, usernames, build systems, document authorship, or hidden embedded files—without needing “exploitation”.
+
+#### 4.4.1 Identify the real file type and container
+
+File extensions lie (or get stripped). Start by identifying the file *by content* and by its “container” (ZIP, OLE, PDF, ELF, PE, SQLite, etc.). Keep a hash so you can prove you didn’t change it while handling it.
+
+```bash
+# Basic context (size, timestamps, permissions)
+ls -la <FILE>
+stat <FILE>
+
+# Record hashes for later comparison (integrity / reporting)
+sha256sum <FILE> | tee <FILE>.sha256
+md5sum <FILE>    | tee <FILE>.md5
+
+# Identify by magic bytes (and keep going past the first match)
+file <FILE>
+file -k <FILE>                 # keep going: detects nested/compound types
+file --mime <FILE>             # content-type + charset
+file --mime-type <FILE>        # content-type only
+
+# If it might be compressed, try "file" with decompression
+file -z <FILE>
+
+# Quick header peek (useful when "file" is vague)
+xxd -l 64 <FILE>
+hexdump -C -n 64 <FILE>
+```
+
+Practical interpretation: if `file` says *“Zip archive data”* and the extension is `.docx`, it’s an Office OOXML container; if it says *“Composite Document File V2”* it’s old-style OLE Office; if it says *“SQLite 3.x database”* you can query it directly; if it says *“PE32 executable”* you can inspect imports/metadata without running it.
+
+#### 4.4.2 Metadata and hidden context: exiftool + format-specific tools
+
+`exiftool` is the fastest “one command” metadata extractor for **images, PDFs, Office docs, audio/video, archives**, and many other formats. Metadata frequently contains author names, usernames, software versions, internal paths, GPS coordinates, printer names, camera serials, document templates, and creation/modification timelines.
+
+```bash
+# High-signal default run
+exiftool <FILE>
+
+# More complete: duplicates + unknown tags + grouped output
+exiftool -a -u -g1 <FILE>
+
+# Only show common timeline fields (handy for quick triage)
+exiftool -s -G1 -time:all -file:all <FILE>
+
+# Recursive metadata collection (JSON is easy to grep/parse later)
+exiftool -r -a -u -g1 -json . > exif_all.json
+
+# Produce a compact CSV “metadata inventory” across a folder
+exiftool -r -csv \
+  -FileName -FileType -MIMEType -FileSize \
+  -CreateDate -ModifyDate -MetadataDate \
+  -Author -Creator -Producer -Software -CreatorTool \
+  -Title -Subject -Keywords \
+  -GPSLatitude -GPSLongitude -GPSPosition \
+  . > exif_inventory.csv
+
+# Extract embedded thumbnails when present (useful for “preview” leaks)
+exiftool -b -ThumbnailImage -w thumb_%f.jpg <IMAGE_FILE>
+
+# Video/audio: also parse embedded stream metadata/events (when present)
+exiftool -ee <VIDEO_OR_AUDIO_FILE>
+```
+
+When you know the format, add a purpose-built extractor to get richer, structured output:
+
+```bash
+# PDFs: basic document metadata + page info, then full text extraction
+pdfinfo <FILE.pdf>
+pdftotext <FILE.pdf> - | head -200
+
+# Images: dimensions/format (often quicker than opening a viewer)
+identify -verbose <IMAGE_FILE> | head -80
+
+# Office OOXML (.docx/.xlsx/.pptx): list internal parts and extract key XML
+unzip -l <FILE.docx> | head -50
+unzip -p <FILE.docx> word/document.xml | head -80
+unzip -p <FILE.docx> docProps/core.xml | head -120
+```
+
+#### 4.4.3 Mine readable content fast: strings + grep
+
+`strings` is the fastest way to pull out “accidentally leaked” human-readable content from binaries, dumps, and unknown blobs (URLs, credentials, API keys, internal endpoints, file paths, error messages). Pair it with keyword hunting.
+
+```bash
+# Baseline: printable sequences (ASCII) from anywhere in the file
+strings -a -n 6 <FILE> | less
+
+# Include offsets (helps you go back with xxd/hexdump later)
+strings -a -n 6 -t x <FILE> | head -200
+
+# Try UTF-16LE (common in Windows artifacts); compare results
+strings -a -n 6 -el <FILE> | head -200
+
+# Keyword hunting on extracted strings (tune patterns to the engagement)
+strings -a -n 6 <FILE> | grep -iE \
+  'pass(word)?|pwd|secret|token|api[_-]?key|bearer|auth|cookie|session|jdbc:|ldap(s)?:|smb://|ssh-rsa|BEGIN (RSA|OPENSSH) PRIVATE KEY' \
+  | head -200
+
+# Folder-level hunting (fast, respects binary files)
+rg -nI --hidden --no-mmap \
+  "pass(word)?|pwd|secret|token|api[_-]?key|bearer\s+[A-Za-z0-9._-]+|BEGIN (RSA|OPENSSH) PRIVATE KEY|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{10,}" \
+  .
+
+# If you must use grep recursively, keep it readable and avoid binary noise
+grep -RniE --binary-files=without-match \
+  "pass(word)?|pwd|secret|token|api[_-]?key|bearer|BEGIN (RSA|OPENSSH) PRIVATE KEY" \
+  .
+```
+
+A good workflow is: `strings` (quick wins) → `rg/grep` across the extracted workspace → then open the specific hits with `less`, `sed`, or an editor to confirm context before reporting.
+
+#### 4.4.4 Unpack containers and carve embedded content
+
+A lot of “files” are containers: Office OOXML, Java JAR/WAR, APKs, firmware blobs, backups, and even executables with embedded ZIPs. Unpack them into a controlled directory and repeat metadata + strings on the extracted contents.
+
+```bash
+# Work in a dedicated directory to avoid clutter and path traversal issues
+mkdir -p triage_out && cd triage_out
+
+# ZIP-like containers (Office OOXML, JAR/WAR, many backups)
+7z l ../<FILE>
+7z x ../<FILE> -oextracted
+
+# tar/gzip/bzip/xz
+tar -tf ../<FILE>.tar
+tar -xvf ../<FILE>.tar -C extracted
+tar -xvzf ../<FILE>.tar.gz -C extracted
+tar -xvJf ../<FILE>.tar.xz -C extracted
+
+# Classic unzip
+unzip -l ../<FILE>.zip | head -80
+unzip ../<FILE>.zip -d extracted
+```
+
+For “mystery blobs” that contain embedded sub-files (compressed streams, images, configs), carving tools can be useful:
+
+```bash
+# Detect and extract embedded content (can be noisy; use in a sandbox)
+binwalk ../<FILE>
+binwalk -eM ../<FILE>   # extract + recurse into extracted files
+
+# File carving from raw images/dumps (good for disk images, memory dumps)
+foremost -i ../<FILE> -o foremost_out
+```
+
+#### 4.4.5 A few high-value format-specific pivots (optional)
+
+Once you know the type, a specialist tool often reveals “interesting info” faster than generic approaches:
+
+```bash
+# SQLite databases: list tables and query directly
+sqlite3 <FILE.db> '.tables'
+sqlite3 <FILE.db> '.schema'
+sqlite3 <FILE.db> 'SELECT name FROM sqlite_master WHERE type="table";'
+
+# Executables (don’t run them): inspect headers/imports
+readelf -h <FILE.elf>
+objdump -p <FILE.elf> | head -80
+```
+
+#### 4.4.6 Hygiene tips (so you don’t hurt yourself)
+
+Do analysis in a disposable VM/container, avoid executing anything you pulled from a target, and keep extracted artifacts read-only when possible.
+
+```bash
+# Remove execute bit from everything you downloaded/extracted (defense-in-depth)
+chmod -R a-x .
+
+# Keep a manifest of what you extracted
+find . -type f -maxdepth 3 -print0 | xargs -0 sha256sum | tee manifest.sha256
+```
+
+### 4.5 CMS scanning
 
 **WordPress:**
 
@@ -780,7 +956,7 @@ droopescan scan drupal -u <HTTP_PROTOCOL>://<RHOST>:<RPORT>/
 cmsmap -F -d <HTTP_PROTOCOL>://<RHOST>:<RPORT>/
 ```
 
-### 4.5 Web vulnerability scanning
+### 4.6 Web vulnerability scanning
 
 **Nikto:**
 

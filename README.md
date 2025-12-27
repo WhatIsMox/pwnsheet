@@ -97,23 +97,166 @@ pwnsheet/
 
 Contributions are welcome! Here's how you can help:
 
-### Reporting Issues
+#### Reporting Issues
 - Check existing issues first to avoid duplicates
 - Provide clear reproduction steps
 - Include browser/OS information for UI bugs
 
-### Suggesting Enhancements
+#### Suggesting Enhancements
 - Open an issue describing the feature
 - Explain the use case and benefits
 - Consider implementation complexity
 
-### Submitting Pull Requests
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature-name`
-3. Make your changes with clear, descriptive commits
-4. Test thoroughly across different browsers
-5. Submit a PR with a clear description of changes
+#### Update Content
+- Add new pentesting commands and techniques
+- Improve existing phase documentation
+- Share helpful oneliners and workflows
 
+### Submitting Pull Requests
+
+1. **Fork and Clone**
+Go to the [pwnsheet repository](https://github.com/0x8e5afe/pwnsheet), click "Fork" in the top-right corner, then clone your fork locally:
+```bash
+# Replace YOUR_USERNAME with your GitHub username
+git clone https://github.com/YOUR_USERNAME/pwnsheet.git
+cd pwnsheet
+```
+
+2. **Configure Upstream Remote**
+Add the original repository as upstream to keep your fork synchronized:
+```bash
+# Add upstream remote
+git remote add upstream https://github.com/0x8e5afe/pwnsheet.git
+
+# Verify configuration
+git remote -v
+```
+Expected output:
+```bash
+origin    https://github.com/YOUR_USERNAME/pwnsheet.git (fetch)
+origin    https://github.com/YOUR_USERNAME/pwnsheet.git (push)
+upstream  https://github.com/0x8e5afe/pwnsheet.git (fetch)
+upstream  https://github.com/0x8e5afe/pwnsheet.git (push)
+```
+
+3. **Create a Feature Branch**
+Never work directly on the main branch. Instead, create a dedicated branch for your changes:
+```bash
+# Sync with upstream
+git checkout main
+git pull upstream main
+
+# Create your feature branch
+git checkout -b feature/your-feature-name
+```
+
+Branch naming examples:
+- `feature/add-web-shells-section`
+- `fix/parameter-highlighting-bug`
+- `docs/improve-installation-guide`
+
+4. **Test Locally**
+Start a local server and verify everything works before making changes:
+
+```bash
+python3 -m http.server 8000
+```
+
+Open [http://localhost:8000](http://localhost:8000) in your browser and test across different browsers. Use private/incognito mode to ensure your changes aren't affected by cached files.
+
+5. **Make Your Changes**
+Based on what you're contributing:
+
+**For adding/modifying pentesting content:**
+
+- Edit markdown files in the `notes/` directory
+- Follow the existing parameter format: `<PARAMETER_NAME>` or `{{PARAMETER_NAME}}`
+- Keep commands practical and commonly used
+
+**For improving functionality:**
+
+- `scripts/constants.js` - Shared state or templates
+- `scripts/utils.js` - Helper functions
+- `scripts/modals.js` - Modal behaviors
+- `scripts/content.js` - Markdown rendering
+- `scripts/main.js` - Global event handlers
+
+**For UI improvements:**
+
+- `styles.css` - Styling and themes
+- `index.html` - Structure adjustments
+
+6. **Test Thoroughly**
+Before committing, verify your changes work correctly:
+
+- Test across different browsers (Chrome, Firefox, Safari)
+- Verify parameter replacement functionality
+- Check that progress tracking persists between sessions
+- Ensure mobile responsiveness for UI changes
+
+7. **Commit and Push**
+Use clear, descriptive commit messages that explain what and why:
+
+```bash
+# Stage your changes
+git add .
+
+# Commit with a meaningful message
+git commit -m "Add post-exploitation Windows commands section"
+
+# Push to your fork
+git push origin feature/your-feature-name
+```
+
+Good commit message examples:
+
+- "Add reverse shell one-liners for Python and Ruby"
+- "Fix parameter highlighting in nested code blocks"
+- "Update README with macOS installation instructions"
+
+8. **Create a Pull Request**
+Navigate to your fork on GitHub where you'll see a prompt to create a pull request. Click "Compare & pull request" and fill in the description:
+
+```markdown
+## Description
+Added a comprehensive web shells section to the Post Exploitation phase with:
+- PHP web shells
+- ASP.NET web shells
+- JSP web shells
+- Parameter support for target URL and file path
+
+## Testing
+- Verified all commands render correctly
+- Tested parameter replacement functionality
+- Checked mobile responsiveness
+
+## Related Issue
+Closes #123 (if applicable)
+```
+
+### Keeping Your Fork Updated
+
+Before starting new work, sync your fork with the upstream repository:
+
+```bash
+# Switch to main branch
+git checkout main
+
+# Fetch and merge upstream changes
+git fetch upstream
+git merge upstream/main
+
+# Push updates to your fork
+git push origin main
+```
+### Best Practices
+
+1. **One feature per branch** - Don't mix multiple unrelated changes
+2. **Test before submitting** - Make sure everything works
+3. **Follow existing code style** - Match the project's conventions
+4. **Write clear commits** - Future contributors will thank you
+5. **Be responsive** - Address any feedback on your PR promptly
+6. **Start small** - Fix a typo or add a small feature first
 ### Content Guidelines
 When adding or modifying assessment phases:
 - Keep commands practical and commonly used
@@ -140,8 +283,8 @@ Unauthorized access to computer systems is illegal. The authors assume no liabil
 
 <div align="center">
 
-Made with ❤️ by [Giuseppe Toscano](https://gtoscano.me)
+Made with ❤️ by [Giuseppe Toscano](https://gtoscano.me) and [Gabriele Mossino](https://www.linkedin.com/in/gabriele-mossino/)
 
-[⭐ Star on GitHub](https://github.com/0x8e5afe/cybersuite)
+[⭐ Star on GitHub](https://github.com/0x8e5afe/pwnsheet)
 
 </div>
