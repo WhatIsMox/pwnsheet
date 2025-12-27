@@ -1391,7 +1391,7 @@ snmpwalk -v1 -c public <RHOST>
 snmpwalk -v2c -c public <RHOST>
 
 # SNMP walk entire MIB tree + grep
-snmpwalk -v 2c -c public <RHOST> . | grep -iE 'password|passwd|pwd|credential|secret|key'
+snmpwalk -v2c -c public <RHOST> . | grep -iE 'password|passwd|pwd|credential|secret|key'
 
 # System information OID
 snmpwalk -v2c -c public <RHOST> 1.3.6.1.2.1.1
