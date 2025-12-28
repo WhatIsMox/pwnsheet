@@ -445,30 +445,60 @@ body.modal-open {
     width: min(96vw, 1100px);
 }
 
+.global-search-card .pwn-modal-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 360px);
+    grid-template-areas:
+        "field phases"
+        "type phases"
+        "results results";
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.global-search-field {
+    grid-area: field;
+}
+
+.global-search-filters {
+    display: contents;
+}
+
+.global-search-results {
+    grid-area: results;
+}
+
+.global-search-filter-block {
+    align-self: start;
+}
+
+.global-search-filter-block:first-child {
+    grid-area: phases;
+}
+
+.global-search-filter-block:last-child {
+    grid-area: type;
+}
+
 .global-search-field input {
     background: var(--primary-bg);
 }
 
 .global-search-field span {
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
 }
 
 .global-search-field input {
-    padding: 0.55rem 0.75rem;
-    font-size: 0.85rem;
-    min-height: 40px;
-}
-
-.global-search-filters {
-    display: grid;
-    gap: 0.85rem;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.8rem;
+    min-height: 36px;
 }
 
 .global-search-filter-title {
     margin: 0 0 0.4rem;
-    font-size: 0.62rem;
-    letter-spacing: 0.12em;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-muted);
     font-weight: 700;
@@ -477,7 +507,7 @@ body.modal-open {
 .global-search-filter-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: 0.3rem;
 }
 
 .global-search-chip {
@@ -485,8 +515,8 @@ body.modal-open {
     border-radius: 999px;
     background: var(--tertiary-bg);
     color: var(--text-secondary);
-    padding: 0.25rem 0.65rem;
-    font-size: 0.68rem;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.62rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -1645,6 +1675,21 @@ body.modal-open {
     table-layout: fixed;
 }
 
+#toolsModal .modal-table th:nth-child(1),
+#toolsModal .modal-table td:nth-child(1) {
+    width: 22%;
+}
+
+#toolsModal .modal-table th:nth-child(2),
+#toolsModal .modal-table td:nth-child(2) {
+    width: 18%;
+}
+
+#toolsModal .modal-table th:nth-child(3),
+#toolsModal .modal-table td:nth-child(3) {
+    width: 60%;
+}
+
 .modal-table th {
     text-align: left;
     padding: 0.9rem 1rem;
@@ -2135,6 +2180,10 @@ body.modal-open {
 .content-area p {
     line-height: 1.8;
     margin-bottom: 1.25rem;
+    color: var(--text-secondary);
+}
+
+.content-area p code {
     color: var(--text-secondary);
 }
 
@@ -2697,6 +2746,15 @@ body.modal-open {
         padding: 1.25rem 1.5rem 1.5rem;
     }
 
+    .global-search-card .pwn-modal-body {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "field"
+            "type"
+            "phases"
+            "results";
+    }
+
     .section-header {
         flex-direction: column;
         align-items: flex-start;
@@ -2752,6 +2810,49 @@ body.modal-open {
 }
 
 @media (max-width: 576px) {
+    .header-inner {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: nowrap;
+    }
+
+    .header-actions {
+        margin-left: auto;
+        gap: 0.4rem;
+        flex-wrap: nowrap;
+    }
+
+    .header-tool-group {
+        width: auto;
+        justify-content: flex-end;
+        gap: 0.4rem;
+    }
+
+    .header-title {
+        font-size: 1.1rem;
+    }
+
+    .header-icon-btn,
+    .download-kit-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+    }
+
+    .header-icon-btn .bi,
+    .download-kit-btn .bi {
+        font-size: 0.95rem;
+    }
+
+    .new-assessment-btn {
+        width: auto;
+        padding: 0.45rem 0.6rem;
+        font-size: 0.75rem;
+        gap: 0.4rem;
+    }
+
     .header-title::before {
         font-size: 1.25rem;
     }

@@ -3,6 +3,8 @@ let globalSearchUi = null;
 let globalSearchRenderTimeout = null;
 let globalSearchLastTerm = '';
 let globalSearchLastFilterKey = '';
+let globalSearchActiveMatch = null;
+let globalSearchHighlightTimeout = null;
 let globalSearchFilters = {
     phases: new Set(),
     types: new Set()
@@ -143,6 +145,7 @@ function renderContent() {
     
     makeCheckboxesInteractive();
     setupCodeBlockSelection();
+    restoreGlobalSearchHighlight();
 }
 
 function applyParametersToContent(content) {
@@ -1312,6 +1315,15 @@ function renderGlobalSearchResults(term, resultsContainer, modal, options = {}) 
 
         const handleSelect = () => {
             jumpToGlobalSearchMatch(result.phase, term, result.matchIndex);
+            if (typeof closeModal === 'function') {
+                closeModal(modal);
+            } else if (modal) {
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+                if (!document.querySelector('.pwn-modal.show')) {
+                    document.body.classList.remove('modal-open');
+                }
+            }
         };
 
         item.addEventListener('click', handleSelect);
@@ -1497,6 +1509,7 @@ function jumpToGlobalSearchMatch(phase, term, matchIndex) {
         return;
     }
 
+    globalSearchActiveMatch = { phase, term, matchIndex };
     document.querySelectorAll('.phase-btn').forEach(button => {
         button.classList.toggle('active', button.dataset.phase === phase);
     });
@@ -1506,10 +1519,8 @@ function jumpToGlobalSearchMatch(phase, term, matchIndex) {
     loadPhase(phase);
 
     requestAnimationFrame(() => {
-        const found = highlightGlobalSearchMatch(term, matchIndex);
-        if (!found) {
-            resetContentScroll();
-        }
+        restoreGlobalSearchHighlight({ ensureVisible: true });
+        scheduleGlobalSearchHighlightClear();
     });
 }
 
@@ -1563,6 +1574,43 @@ function highlightGlobalSearchMatch(term, matchIndex) {
     }
 
     return false;
+}
+
+function restoreGlobalSearchHighlight(options = {}) {
+    if (!globalSearchActiveMatch || globalSearchActiveMatch.phase !== currentPhase) {
+        return false;
+    }
+
+    const contentArea = document.getElementById('contentArea');
+    if (!contentArea) {
+        return false;
+    }
+
+    const existingHit = contentArea.querySelector('.global-search-hit-active');
+    if (existingHit) {
+        if (options.ensureVisible) {
+            existingHit.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return true;
+    }
+
+    const found = highlightGlobalSearchMatch(globalSearchActiveMatch.term, globalSearchActiveMatch.matchIndex);
+    if (options.ensureVisible && !found) {
+        resetContentScroll();
+    }
+    return found;
+}
+
+function scheduleGlobalSearchHighlightClear(delay = 5000) {
+    if (globalSearchHighlightTimeout) {
+        clearTimeout(globalSearchHighlightTimeout);
+    }
+
+    globalSearchHighlightTimeout = setTimeout(() => {
+        clearGlobalSearchHighlights();
+        globalSearchActiveMatch = null;
+        globalSearchHighlightTimeout = null;
+    }, delay);
 }
 
 function wrapTextMatch(node, start, end, className = 'global-search-hit') {
