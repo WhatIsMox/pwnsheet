@@ -1171,6 +1171,12 @@ function setupToolsTable() {
         command: list.command || ''
     }));
 
+    const passwordCrackingRows = (PASSWORD_CRACKING || []).map(item => ({
+        tool: item.tool,
+        useCase: item.useCase,
+        command: item.command || ''
+    }));
+
     setupFilterableTable({
         tableId: 'toolsTable',
         searchInputId: 'toolsSearch',
@@ -1221,6 +1227,32 @@ function setupToolsTable() {
         searchKeys: ['name', 'category', 'command'],
         emptyMessage: 'No wordlists match your search.',
         data: wordlistRows
+    });
+
+    setupFilterableTable({
+        tableId: 'passwordCrackingTable',
+        searchInputId: 'passwordCrackingSearch',
+        sortGroup: 'password-cracking',
+        columns: [
+            { key: 'tool', index: 0 },
+            { key: 'useCase', index: 1 },
+            {
+                key: 'command',
+                index: 2,
+                render: (value) => {
+                    if (!value) {
+                        return document.createTextNode('');
+                    }
+                    const snippet = createCopyableSnippet(value, [], true);
+                    snippet.classList.add('table-snippet');
+                    addModalCopyBehavior(snippet);
+                    return snippet;
+                }
+            }
+        ],
+        searchKeys: ['tool', 'useCase', 'command'],
+        emptyMessage: 'No password cracking commands match your search.',
+        data: passwordCrackingRows
     });
 }
 
