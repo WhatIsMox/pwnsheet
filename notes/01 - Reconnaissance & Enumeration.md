@@ -2066,15 +2066,23 @@ bloodhound-python -c Group,LocalAdmin,Session,Trusts -u <USER> -p <PASS> -d <DOM
 ```powershell
 # Standard collection (JSON output for CE)
 .\SharpHound.exe -c All --outputdirectory C:\Temp
+
+# In case of LDAP connection issues
+.\SharpHound.exe -c DCOnly -d <DOMAIN> --domaincontroller <DC_IP>
+
 # Fast collection (no session enumeration)
 .\SharpHound.exe -c DCOnly
+
 # Specific collection methods
 .\SharpHound.exe -c Session,LoggedOn
 .\SharpHound.exe -c Group,LocalAdmin,Trusts
+
 # Loop collection (for sessions)
 .\SharpHound.exe -c All --Loop --Loopduration 02:00:00
+
 # Stealth collection
 .\SharpHound.exe -c All --Stealth
+
 # Domain specification
 .\SharpHound.exe -c All -d  --outputdirectory C:\Temp
 ```
